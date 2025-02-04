@@ -136,8 +136,8 @@ namespace MenuExtension_MaterialInstance {
 		FToolMenuSection& Section = Menu->FindOrAddSection("GetAssetActions");
 		Section.AddDynamicEntry(NAME_None, FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
 			{
-				const TAttribute<FText> Label = LOCTEXT("Material_LogTest", "Add Menu Test");
-				const TAttribute<FText> ToolTip = LOCTEXT("Material_LogTestTooltip", "Add Menu Test.");
+				const TAttribute<FText> Label = LOCTEXT("Material_RenameToRecommendedPrefix", "Rename to Recommended Prefix");
+				const TAttribute<FText> ToolTip = LOCTEXT("Material_RenameToRecommendedPrefixTooltip", "Rename the selected material instance to the Unreal Engine recommended prefix.");
 				const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.MaterialInstanceActor");
 				const FToolMenuExecuteAction Action = FToolMenuExecuteAction::CreateStatic(&MenuExtension_MaterialInstance::OnExecuteAction);
 
