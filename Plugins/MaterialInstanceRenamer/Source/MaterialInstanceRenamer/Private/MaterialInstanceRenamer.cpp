@@ -48,15 +48,11 @@ namespace MenuExtension_MaterialInstance {
 
 			for (const FAssetData& SelectedAsset : Context->SelectedAssets)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Selected asset: %s"), *SelectedAsset.AssetName.ToString());
-
 				UObject* Asset = SelectedAsset.GetAsset();
 				if (Asset && Asset->IsA<UMaterialInstance>())
 				{
 					FString OldName = SelectedAsset.AssetName.ToString();
 					FString OldPackagePath = SelectedAsset.PackagePath.ToString();
-					UE_LOG(LogTemp, Log, TEXT("Selected Material Instance: %s"), *OldName);
-
 
 					CheckAssetReferences(SelectedAsset.ObjectPath.ToString());
 
@@ -73,20 +69,7 @@ namespace MenuExtension_MaterialInstance {
 						FString NewPackagePath = OldPackagePath;
 
 						FText OutErrorMessage;
-						UE_LOG(LogTemp, Log, TEXT("Checking if name is allowed: %s"), *NewPackagePath);
-						if (!AssetToolsModule.Get().IsNameAllowed(NewPackagePath, &OutErrorMessage))
-						{
-							UE_LOG(LogTemp, Error, TEXT("Invalid name: %s"), *OutErrorMessage.ToString());
-							continue;
-						}
-						else
-						{
-							UE_LOG(LogTemp, Log, TEXT("Name is allowed: %s"), *NewPackagePath);
-						}
-
 						FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, NewName);
-						UE_LOG(LogTemp, Log, TEXT("RenameData - Asset: %s, NewPackagePath: %s, OldPackageName: %s"), *SelectedAsset.GetAsset()->GetName(), *NewPackagePath, *SelectedAsset.PackageName.ToString());
-						UE_LOG(LogTemp, Log, TEXT("Calling RenameAssetsWithDialog with NewPackagePath: %s"), *NewPackagePath);
 						EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
 						bool bSuccess = (RenameResult == EAssetRenameResult::Success);
 						if (!bSuccess)
