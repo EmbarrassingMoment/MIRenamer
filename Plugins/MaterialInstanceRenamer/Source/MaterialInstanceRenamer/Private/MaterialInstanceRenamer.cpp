@@ -141,7 +141,7 @@ namespace MenuExtension_MaterialInstance {
 				const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.MaterialInstanceActor");
 				const FToolMenuExecuteAction Action = FToolMenuExecuteAction::CreateStatic(&MenuExtension_MaterialInstance::OnExecuteAction);
 
-				InSection.AddMenuEntry("Material_LogTest", Label, ToolTip, Icon, Action);
+				InSection.AddMenuEntry("Material_RenameToRecommendedPrefix", Label, ToolTip, Icon, Action);
 			}));
 	}
 }
