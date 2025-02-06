@@ -40,7 +40,7 @@ namespace MenuExtension_MaterialInstance {
 
 	static void OnExecuteAction(const FToolMenuContext& MenuContext)
 	{
-		UE_LOG(LogTemp, Log, TEXT("OnExecuteAction called")); 
+		UE_LOG(LogTemp, Log, TEXT("OnExecuteAction called"));
 
 		if (const UContentBrowserAssetContextMenuContext* Context = MenuContext.FindContext<UContentBrowserAssetContextMenuContext>())
 		{
@@ -63,7 +63,6 @@ namespace MenuExtension_MaterialInstance {
 						FString CoreName = OldName.Mid(StartIndex, EndIndex - StartIndex);
 						FString NewName = TEXT("MI_") + CoreName;
 						UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *NewName);
-
 
 						FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
 						FString NewPackagePath = OldPackagePath;
@@ -101,6 +100,7 @@ namespace MenuExtension_MaterialInstance {
 				else
 				{
 					UE_LOG(LogTemp, Log, TEXT("Selected asset is not a Material Instance"));
+					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NotAMaterialInstance", "The selected asset is not a Material Instance."));
 				}
 			}
 		}
