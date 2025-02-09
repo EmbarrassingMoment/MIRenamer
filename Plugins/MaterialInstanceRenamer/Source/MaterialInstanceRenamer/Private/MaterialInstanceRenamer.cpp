@@ -58,13 +58,13 @@ namespace MenuExtension_MaterialInstance {
 				switch (RenameResult)
 				{
 				case EAssetRenameResult::Failure:
-					UE_LOG(LogTemp, Error, TEXT("Rename failed due to an unspecified error."));
+					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameFailure", "Rename failed due to an unspecified error."));
 					break;
 				case EAssetRenameResult::Pending:
-					UE_LOG(LogTemp, Error, TEXT("Pending."));
+					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenamePending", "Rename is pending."));
 					break;
 				default:
-					UE_LOG(LogTemp, Error, TEXT("Rename failed with an unknown error."));
+					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameUnknownError", "Rename failed with an unknown error."));
 					break;
 				}
 			}
