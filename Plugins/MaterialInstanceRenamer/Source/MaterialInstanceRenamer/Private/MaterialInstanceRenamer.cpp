@@ -71,7 +71,7 @@ namespace MenuExtension_MaterialInstance {
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Name does not match pattern"));
+			FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NamePatternMismatch", "The name does not match the required pattern."));
 		}
 	}
 
@@ -79,7 +79,7 @@ namespace MenuExtension_MaterialInstance {
 	{
 		UE_LOG(LogTemp, Log, TEXT("OnExecuteAction called"));
 
-		if (const UContentBrowserAssetContextMenuContext* Context = MenuContext.FindContext<UContentBrowserAssetContextMenuContext>())
+ 		if (const UContentBrowserAssetContextMenuContext* Context = MenuContext.FindContext<UContentBrowserAssetContextMenuContext>())
 		{
 			UE_LOG(LogTemp, Log, TEXT("Context found"));
 
