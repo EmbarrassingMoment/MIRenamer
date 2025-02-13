@@ -30,50 +30,73 @@ namespace MenuExtension_MaterialInstance {
 		AssetRegistry.GetReferencers(AssetData.PackageName, Referencers);
 	}
 
-	static void RenameMaterialInstance(const FAssetData& SelectedAsset)
-	{
-		FString OldName = SelectedAsset.AssetName.ToString();
-		FString OldPackagePath = SelectedAsset.PackagePath.ToString();
+    static void RenameMaterialInstance(const FAssetData& SelectedAsset)
+    {
+        FString OldName = SelectedAsset.AssetName.ToString();
+        FString OldPackagePath = SelectedAsset.PackagePath.ToString();
 
-		CheckAssetReferences(SelectedAsset.ObjectPath.ToString());
+        CheckAssetReferences(SelectedAsset.ObjectPath.ToString());
 
-		if (OldName.StartsWith(TEXT("M_")) && OldName.Contains(TEXT("_Inst")))
-		{
-			int32 StartIndex = 2;
-			int32 EndIndex = OldName.Find(TEXT("_Inst"));
-			FString CoreName = OldName.Mid(StartIndex, EndIndex - StartIndex);
-			FString NewName = TEXT("MI_") + CoreName;
-			UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *NewName);
+        if (OldName.StartsWith(TEXT("M_")) && OldName.Contains(TEXT("_Inst")))
+        {
+            int32 StartIndex = 2;
+            int32 EndIndex = OldName.Find(TEXT("_Inst"));
+            FString CoreName = OldName.Mid(StartIndex, EndIndex - StartIndex);
+            FString NewName = TEXT("MI_") + CoreName;
+            UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *NewName);
 
-			FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
-			FString NewPackagePath = OldPackagePath;
+            FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+            FString NewPackagePath = OldPackagePath;
 
-			FText OutErrorMessage;
-			FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, NewName);
-			EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
-			bool bSuccess = (RenameResult == EAssetRenameResult::Success);
-			if (!bSuccess)
-			{
-				UE_LOG(LogTemp, Error, TEXT("Failed to rename asset. RenameResult: %d"), static_cast<int32>(RenameResult));
-				switch (RenameResult)
-				{
-				case EAssetRenameResult::Failure:
-					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameFailure", "Rename failed due to an unspecified error."));
-					break;
-				case EAssetRenameResult::Pending:
-					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenamePending", "Rename is pending."));
-					break;
-				default:
-					FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameUnknownError", "Rename failed with an unknown error."));
-					break;
-				}
-			}
-		}
-		else
-		{
-			FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NamePatternMismatch", "The name does not match the required pattern."));
-		}
-	}
+            FText OutErrorMessage;
+            FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, NewName);
+            EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
+            bool bSuccess = (RenameResult == EAssetRenameResult::Success);
+            if (bSuccess)
+            {
+                // リネーム後のアセットを再取得
+                FString NewAssetPath = NewPackagePath / NewName + TEXT(".") + NewName;
+                FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+                IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+                FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*NewAssetPath);
+
+                if (NewAssetData.IsValid())
+                {
+                    // パッケージをdirty状態にする
+                    UPackage* Package = NewAssetData.GetAsset()->GetOutermost();
+                    if (Package)
+                    {
+                        Package->MarkPackageDirty();
+                        UE_LOG(LogTemp, Log, TEXT("Package marked as dirty: %s"), *Package->GetName());
+                    }
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Error, TEXT("Failed to retrieve renamed asset."));
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to rename asset. RenameResult: %d"), static_cast<int32>(RenameResult));
+                switch (RenameResult)
+                {
+                case EAssetRenameResult::Failure:
+                    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameFailure", "Rename failed due to an unspecified error."));
+                    break;
+                case EAssetRenameResult::Pending:
+                    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenamePending", "Rename is pending."));
+                    break;
+                default:
+                    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameUnknownError", "Rename failed with an unknown error."));
+                    break;
+                }
+            }
+        }
+        else
+        {
+            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NamePatternMismatch", "The name does not match the required pattern."));
+        }
+    }
 
 	static void OnExecuteAction(const FToolMenuContext& MenuContext)
 	{
