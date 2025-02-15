@@ -43,21 +43,31 @@ namespace MenuExtension_MaterialInstance {
             int32 EndIndex = OldName.Find(TEXT("_Inst"));
             FString CoreName = OldName.Mid(StartIndex, EndIndex - StartIndex);
             FString NewName = TEXT("MI_") + CoreName;
-            UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *NewName);
-
-            FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
             FString NewPackagePath = OldPackagePath;
 
+            FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+            FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+            IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+            // リネーム後の名前が存在するかチェックし、存在する場合は数値を付与
+            FString FinalNewName = NewName;
+            FString NewAssetPath = NewPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+            int32 Suffix = 1;
+            while (AssetRegistry.GetAssetByObjectPath(*NewAssetPath).IsValid())
+            {
+                FinalNewName = NewName + FString::Printf(TEXT("_%d"), Suffix++);
+                NewAssetPath = NewPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+            }
+
+            UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
+
             FText OutErrorMessage;
-            FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, NewName);
+            FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, FinalNewName);
             EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
             bool bSuccess = (RenameResult == EAssetRenameResult::Success);
             if (bSuccess)
             {
                 // リネーム後のアセットを再取得
-                FString NewAssetPath = NewPackagePath / NewName + TEXT(".") + NewName;
-                FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-                IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
                 FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*NewAssetPath);
 
                 if (NewAssetData.IsValid())
