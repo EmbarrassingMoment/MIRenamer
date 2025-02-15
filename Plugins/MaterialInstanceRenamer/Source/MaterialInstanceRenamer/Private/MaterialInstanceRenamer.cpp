@@ -55,7 +55,7 @@ namespace MenuExtension_MaterialInstance {
             int32 Suffix = 1;
             while (AssetRegistry.GetAssetByObjectPath(*NewAssetPath).IsValid())
             {
-                FinalNewName = NewName + FString::Printf(TEXT("_%d"), Suffix++);
+                FinalNewName = NewName + FString::Printf(TEXT("%d"), Suffix++);
                 NewAssetPath = NewPackagePath / FinalNewName + TEXT(".") + FinalNewName;
             }
 
