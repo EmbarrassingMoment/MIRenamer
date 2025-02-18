@@ -59,10 +59,54 @@ namespace MenuExtension_MaterialInstance {
         }
     }
 
+    static bool ConfirmRename()
+    {
+        EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？"));
+        return ReturnType == EAppReturnType::Yes;
+    }
+
+    static void RenameAsset(const FAssetData& SelectedAsset, const FString& NewName)
+    {
+        FString OldPackagePath = SelectedAsset.PackagePath.ToString();
+        FString NewPackagePath = OldPackagePath;
+
+        FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+        FString FinalNewName = GenerateUniqueAssetName(NewName, NewPackagePath, AssetRegistry);
+        UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
+
+        FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, FinalNewName);
+        EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
+        if (RenameResult == EAssetRenameResult::Success)
+        {
+            FString NewAssetPath = NewPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+            FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*NewAssetPath);
+
+            if (NewAssetData.IsValid())
+            {
+                UPackage* Package = NewAssetData.GetAsset()->GetOutermost();
+                if (Package)
+                {
+                    Package->MarkPackageDirty();
+                    UE_LOG(LogTemp, Log, TEXT("Package marked as dirty: %s"), *Package->GetName());
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Failed to retrieve renamed asset."));
+            }
+        }
+        else
+        {
+            HandleRenameResult(RenameResult);
+        }
+    }
+
     static void RenameMaterialInstance(const FAssetData& SelectedAsset)
     {
         FString OldName = SelectedAsset.AssetName.ToString();
-        FString OldPackagePath = SelectedAsset.PackagePath.ToString();
 
         CheckAssetReferences(SelectedAsset.ObjectPath.ToString());
 
@@ -72,39 +116,14 @@ namespace MenuExtension_MaterialInstance {
             int32 EndIndex = OldName.Find(TEXT("_Inst"));
             FString CoreName = OldName.Mid(StartIndex, EndIndex - StartIndex);
             FString NewName = TEXT("MI_") + CoreName;
-            FString NewPackagePath = OldPackagePath;
-
-            FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
-            FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-            IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-            FString FinalNewName = GenerateUniqueAssetName(NewName, NewPackagePath, AssetRegistry);
-            UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
-
-            FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, FinalNewName);
-            EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
-            if (RenameResult == EAssetRenameResult::Success)
+            RenameAsset(SelectedAsset, NewName);
+        }
+        else if (!OldName.StartsWith(TEXT("MI_")))
+        {
+            if (ConfirmRename())
             {
-                FString NewAssetPath = NewPackagePath / FinalNewName + TEXT(".") + FinalNewName;
-                FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*NewAssetPath);
-
-                if (NewAssetData.IsValid())
-                {
-                    UPackage* Package = NewAssetData.GetAsset()->GetOutermost();
-                    if (Package)
-                    {
-                        Package->MarkPackageDirty();
-                        UE_LOG(LogTemp, Log, TEXT("Package marked as dirty: %s"), *Package->GetName());
-                    }
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Error, TEXT("Failed to retrieve renamed asset."));
-                }
-            }
-            else
-            {
-                HandleRenameResult(RenameResult);
+                FString NewName = TEXT("MI_") + OldName;
+                RenameAsset(SelectedAsset, NewName);
             }
         }
         else
@@ -115,23 +134,21 @@ namespace MenuExtension_MaterialInstance {
 
     static void OnExecuteAction(const FToolMenuContext& MenuContext)
     {
-        UE_LOG(LogTemp, Log, TEXT("OnExecuteAction called"));
-
         if (const UContentBrowserAssetContextMenuContext* Context = MenuContext.FindContext<UContentBrowserAssetContextMenuContext>())
         {
-            UE_LOG(LogTemp, Log, TEXT("Context found"));
-
             for (const FAssetData& SelectedAsset : Context->SelectedAssets)
             {
-                UObject* Asset = SelectedAsset.GetAsset();
-                if (Asset && Asset->IsA<UMaterialInstance>())
+                if (UObject* Asset = SelectedAsset.GetAsset())
                 {
-                    RenameMaterialInstance(SelectedAsset);
-                }
-                else
-                {
-                    UE_LOG(LogTemp, Log, TEXT("Selected asset is not a Material Instance"));
-                    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NotAMaterialInstance", "The selected asset is not a Material Instance."));
+                    if (Asset->IsA<UMaterialInstance>())
+                    {
+                        RenameMaterialInstance(SelectedAsset);
+                    }
+                    else
+                    {
+                        UE_LOG(LogTemp, Log, TEXT("Selected asset is not a Material Instance"));
+                        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NotAMaterialInstance", "The selected asset is not a Material Instance."));
+                    }
                 }
             }
         }
