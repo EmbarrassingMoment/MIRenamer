@@ -3,14 +3,14 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "MaterialInstanceRenamer",
-	"Description": "",
-	"Category": "Other",
+	"Description": "This plugin provides tools to easily rename material instances in Unreal Engine. It automatically renames selected material instances based on the recommended prefix for Unreal Engine.",
+	"Category": "Editor",
 	"CreatedBy": "Kurorekishi",
-	"CreatedByURL": "",
+	"CreatedByURL": "https://github.com/EmbarrassingMoment",
 	"DocsURL": "",
 	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
+	"SupportURL": "https://github.com/EmbarrassingMoment/MIRenamer",
+	"CanContainContent": false,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
@@ -18,7 +18,11 @@
 		{
 			"Name": "MaterialInstanceRenamer",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+            "WhitelistPlatforms": [
+               "Win64",
+               "Win32"
+           ]
 		}
 	]
 }
