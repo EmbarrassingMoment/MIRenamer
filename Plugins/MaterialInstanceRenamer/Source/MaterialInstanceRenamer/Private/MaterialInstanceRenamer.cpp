@@ -25,9 +25,6 @@ namespace MenuExtension_MaterialInstance {
             FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("InvalidAssetPath", "The asset path is invalid."));
             return;
         }
-
-        TArray<FName> Referencers;
-        AssetRegistry.GetReferencers(AssetData.PackageName, Referencers);
     }
 
     static FString GenerateUniqueAssetName(const FString& BaseName, const FString& PackagePath, IAssetRegistry& AssetRegistry)
@@ -68,20 +65,19 @@ namespace MenuExtension_MaterialInstance {
     static void RenameAsset(const FAssetData& SelectedAsset, const FString& NewName)
     {
         FString OldPackagePath = SelectedAsset.PackagePath.ToString();
-        FString NewPackagePath = OldPackagePath;
 
         FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
         FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
         IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
-        FString FinalNewName = GenerateUniqueAssetName(NewName, NewPackagePath, AssetRegistry);
+        FString FinalNewName = GenerateUniqueAssetName(NewName, OldPackagePath, AssetRegistry);
         UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
 
-        FAssetRenameData RenameData(SelectedAsset.GetAsset(), NewPackagePath, FinalNewName);
+        FAssetRenameData RenameData(SelectedAsset.GetAsset(), OldPackagePath, FinalNewName);
         EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
         if (RenameResult == EAssetRenameResult::Success)
         {
-            FString NewAssetPath = NewPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+            FString NewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
             FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*NewAssetPath);
 
             if (NewAssetData.IsValid())
