@@ -10,18 +10,16 @@
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "https://github.com/EmbarrassingMoment/MIRenamer",
+	"EngineVersion": "5.4.0",
 	"CanContainContent": false,
-	"IsBetaVersion": false,
-	"IsExperimentalVersion": false,
-	"Installed": false,
+	"Installed": true,
 	"Modules": [
 		{
 			"Name": "MaterialInstanceRenamer",
 			"Type": "Editor",
 			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Win32"
+			"PlatformAllowList": [
+				"Win64"
 			]
 		}
 	]
