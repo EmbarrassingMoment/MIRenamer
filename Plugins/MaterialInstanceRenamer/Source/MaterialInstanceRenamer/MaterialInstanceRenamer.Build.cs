@@ -1,4 +1,4 @@
-// MaterialInstanceRenamer.Build.cs
+// Copyright 2025 kurorekish. All Rights Reserved.
 
 using UnrealBuildTool;
 

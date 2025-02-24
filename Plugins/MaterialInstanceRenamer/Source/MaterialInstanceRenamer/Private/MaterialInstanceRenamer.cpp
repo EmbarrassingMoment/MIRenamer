@@ -1,4 +1,4 @@
-﻿// MaterialInstanceRenamer.cpp
+﻿// Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "MaterialInstanceRenamer.h"
 #include "Modules/ModuleManager.h"
