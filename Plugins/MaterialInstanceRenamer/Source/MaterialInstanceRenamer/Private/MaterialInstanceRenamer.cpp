@@ -16,56 +16,6 @@
 
 namespace MenuExtension_MaterialInstance {
 
-
-
-    static void CheckAssetReferences(const FString& AssetPath)
-    {
-        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-        IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-        FAssetData AssetData = AssetRegistry.GetAssetByObjectPath(*AssetPath);
-        if (!AssetData.IsValid())
-        {
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("InvalidAssetPath", "The asset path is invalid."));
-            return;
-        }
-    }
-
-    static FString GenerateUniqueAssetName(const FString& BaseName, const FString& PackagePath, IAssetRegistry& AssetRegistry)
-    {
-        FString FinalNewName = BaseName;
-        FString NewAssetPath = PackagePath / FinalNewName + TEXT(".") + FinalNewName;
-        int32 Suffix = 1;
-        while (AssetRegistry.GetAssetByObjectPath(*NewAssetPath).IsValid())
-        {
-            FinalNewName = BaseName + FString::Printf(TEXT("%d"), Suffix++);
-            NewAssetPath = PackagePath / FinalNewName + TEXT(".") + FinalNewName;
-        }
-        return FinalNewName;
-    }
-
-    static void HandleRenameResult(EAssetRenameResult RenameResult)
-    {
-        switch (RenameResult)
-        {
-        case EAssetRenameResult::Failure:
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameFailure", "Rename failed due to an unspecified error."));
-            break;
-        case EAssetRenameResult::Pending:
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenamePending", "Rename is pending."));
-            break;
-        default:
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameUnknownError", "Rename failed with an unknown error."));
-            break;
-        }
-    }
-
-    static bool ConfirmRename()
-    {
-        EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？"));
-        return ReturnType == EAppReturnType::Yes;
-    }
-
     static void RenameAsset(const FAssetData& SelectedAsset, const FString& NewName)
     {
         FString OldPackagePath = SelectedAsset.PackagePath.ToString();
@@ -74,15 +24,23 @@ namespace MenuExtension_MaterialInstance {
         FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
         IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
-        FString FinalNewName = GenerateUniqueAssetName(NewName, OldPackagePath, AssetRegistry);
+        FString FinalNewName = NewName;
+        FString NewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+        int32 Suffix = 1;
+        while (AssetRegistry.GetAssetByObjectPath(*NewAssetPath).IsValid())
+        {
+            FinalNewName = NewName + FString::Printf(TEXT("%d"), Suffix++);
+            NewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+        }
+
         UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
 
         FAssetRenameData RenameData(SelectedAsset.GetAsset(), OldPackagePath, FinalNewName);
         EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
         if (RenameResult == EAssetRenameResult::Success)
         {
-            FString NewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
-            FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*NewAssetPath);
+            FString FinalNewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
+            FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*FinalNewAssetPath);
 
             if (NewAssetData.IsValid())
             {
@@ -100,15 +58,35 @@ namespace MenuExtension_MaterialInstance {
         }
         else
         {
-            HandleRenameResult(RenameResult);
+            switch (RenameResult)
+            {
+            case EAssetRenameResult::Failure:
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameFailure", "Rename failed due to an unspecified error."));
+                break;
+            case EAssetRenameResult::Pending:
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenamePending", "Rename is pending."));
+                break;
+            default:
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameUnknownError", "Rename failed with an unknown error."));
+                break;
+            }
         }
     }
+
 
     static void RenameMaterialInstance(const FAssetData& SelectedAsset)
     {
         FString OldName = SelectedAsset.AssetName.ToString();
 
-        CheckAssetReferences(SelectedAsset.ObjectPath.ToString());
+        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+        FAssetData AssetData = AssetRegistry.GetAssetByObjectPath(*SelectedAsset.ObjectPath.ToString());
+        if (!AssetData.IsValid())
+        {
+            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("InvalidAssetPath", "The asset path is invalid."));
+            return;
+        }
 
         if (OldName.StartsWith(TEXT("M_")) && OldName.Contains(TEXT("_Inst")))
         {
@@ -120,7 +98,8 @@ namespace MenuExtension_MaterialInstance {
         }
         else if (!OldName.StartsWith(TEXT("MI_")))
         {
-            if (ConfirmRename())
+            EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？"));
+            if (ReturnType == EAppReturnType::Yes)
             {
                 FString NewName = TEXT("MI_") + OldName;
                 RenameAsset(SelectedAsset, NewName);
@@ -179,12 +158,14 @@ namespace MenuExtension_MaterialInstance {
     }
 }
 
-
-
 void FMaterialInstanceRenamerModule::StartupModule()
 {
     MenuExtension_MaterialInstance::AddMaterialContextMenuEntry();
-    // ツールタブにボタンを追加
+    AddToolMenuEntry();
+}
+
+void FMaterialInstanceRenamerModule::AddToolMenuEntry()
+{
     FToolMenuOwnerScoped OwnerScoped(UE_MODULE_NAME);
     UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
 
@@ -196,8 +177,6 @@ void FMaterialInstanceRenamerModule::StartupModule()
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
     );
-
-
 }
 
 void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
@@ -207,7 +186,7 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 
     TArray<FAssetData> MaterialInstanceAssets;
     FARFilter Filter;
-    Filter.PackagePaths.Add("/Game"); // /Game パスを追加
+    Filter.PackagePaths.Add("/Game");
     Filter.bRecursivePaths = true;
     Filter.ClassPaths.Add(UMaterialInstanceConstant::StaticClass()->GetClassPathName());
     AssetRegistry.GetAssets(Filter, MaterialInstanceAssets);
@@ -216,9 +195,7 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
     {
         MenuExtension_MaterialInstance::RenameMaterialInstance(AssetData);
     }
-
 }
-
 
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
@@ -227,8 +204,6 @@ void FMaterialInstanceRenamerModule::ShutdownModule()
         UToolMenus::UnregisterOwner(this);
     }
 }
-
-
 
 #undef LOCTEXT_NAMESPACE
 
