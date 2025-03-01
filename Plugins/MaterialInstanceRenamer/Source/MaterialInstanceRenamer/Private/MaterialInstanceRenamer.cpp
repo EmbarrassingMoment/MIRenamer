@@ -9,11 +9,15 @@
 #include "AssetToolsModule.h"
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include <AssetRegistry/AssetRegistryModule.h>
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
 namespace MenuExtension_MaterialInstance {
+
+
+
     static void CheckAssetReferences(const FString& AssetPath)
     {
         FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -175,10 +179,46 @@ namespace MenuExtension_MaterialInstance {
     }
 }
 
+
+
 void FMaterialInstanceRenamerModule::StartupModule()
 {
     MenuExtension_MaterialInstance::AddMaterialContextMenuEntry();
+    // ツールタブにボタンを追加
+    FToolMenuOwnerScoped OwnerScoped(UE_MODULE_NAME);
+    UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
+
+    FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer");
+    Section.AddMenuEntry(
+        "RenameAllMaterialInstances",
+        LOCTEXT("RenameAllMaterialInstances", "Rename All Material Instances"),
+        LOCTEXT("RenameAllMaterialInstancesTooltip", "Rename all material instances in the assets folder"),
+        FSlateIcon(),
+        FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
+    );
+
+
 }
+
+void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
+{
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+    TArray<FAssetData> MaterialInstanceAssets;
+    FARFilter Filter;
+    Filter.PackagePaths.Add("/Game"); // /Game パスを追加
+    Filter.bRecursivePaths = true;
+    Filter.ClassPaths.Add(UMaterialInstanceConstant::StaticClass()->GetClassPathName());
+    AssetRegistry.GetAssets(Filter, MaterialInstanceAssets);
+
+    for (const FAssetData& AssetData : MaterialInstanceAssets)
+    {
+        MenuExtension_MaterialInstance::RenameMaterialInstance(AssetData);
+    }
+
+}
+
 
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
@@ -187,6 +227,8 @@ void FMaterialInstanceRenamerModule::ShutdownModule()
         UToolMenus::UnregisterOwner(this);
     }
 }
+
+
 
 #undef LOCTEXT_NAMESPACE
 

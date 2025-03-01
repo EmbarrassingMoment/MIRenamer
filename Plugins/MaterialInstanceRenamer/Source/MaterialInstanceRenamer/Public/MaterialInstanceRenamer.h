@@ -13,7 +13,7 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-	void AddMaterialContextMenuEntry();
-	void OnExecuteAction(const FToolMenuContext& MenuContext);
 
+private:
+	void OnRenameAllMaterialInstancesClicked();
 };
