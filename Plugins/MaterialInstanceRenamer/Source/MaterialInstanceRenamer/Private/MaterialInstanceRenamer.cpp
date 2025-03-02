@@ -195,7 +195,12 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
     {
         MenuExtension_MaterialInstance::RenameMaterialInstance(AssetData);
     }
+
+    // Notify completion of renaming
+    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameComplete", "Renaming of all material instances is complete."));
 }
+
+
 
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
