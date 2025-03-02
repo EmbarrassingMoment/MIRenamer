@@ -8,13 +8,21 @@
 class FMaterialInstanceRenamerModule : public IModuleInterface
 {
 public:
+	static FMaterialInstanceRenamerModule& Get()
+	{
+		return FModuleManager::LoadModuleChecked<FMaterialInstanceRenamerModule>("MaterialInstanceRenamer");
+	}
 
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+	bool IsBatchRename() const { return bIsBatchRename; }
+	void SetBatchRename(bool bInBatchRename) { bIsBatchRename = bInBatchRename; }
 
 private:
 	void OnRenameAllMaterialInstancesClicked();
 	void AddToolMenuEntry();
+
+	bool bIsBatchRename = false; // ƒtƒ‰ƒO‚ð’Ç‰Á
 };

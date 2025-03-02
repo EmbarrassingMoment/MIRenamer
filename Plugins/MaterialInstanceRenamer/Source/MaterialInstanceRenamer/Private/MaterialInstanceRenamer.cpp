@@ -58,48 +58,36 @@ namespace MenuExtension_MaterialInstance {
         }
         else
         {
+            FText ErrorMessage;
             switch (RenameResult)
             {
             case EAssetRenameResult::Failure:
-                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameFailure", "Rename failed due to an unspecified error."));
+                ErrorMessage = LOCTEXT("RenameFailure", "Rename failed due to an unspecified error.");
                 break;
             case EAssetRenameResult::Pending:
-                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenamePending", "Rename is pending."));
+                ErrorMessage = LOCTEXT("RenamePending", "Rename is pending.");
                 break;
             default:
-                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameUnknownError", "Rename failed with an unknown error."));
+                ErrorMessage = LOCTEXT("RenameUnknownError", "Rename failed with an unknown error.");
                 break;
             }
+            FMessageDialog::Open(EAppMsgType::Ok, ErrorMessage);
         }
     }
-
 
     static void RenameMaterialInstance(const FAssetData& SelectedAsset)
     {
         FString OldName = SelectedAsset.AssetName.ToString();
 
-        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-        IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-        FAssetData AssetData = AssetRegistry.GetAssetByObjectPath(*SelectedAsset.ObjectPath.ToString());
-        if (!AssetData.IsValid())
-        {
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("InvalidAssetPath", "The asset path is invalid."));
-            return;
-        }
-
         if (OldName.StartsWith(TEXT("M_")) && OldName.Contains(TEXT("_Inst")))
         {
-            int32 StartIndex = 2;
-            int32 EndIndex = OldName.Find(TEXT("_Inst"));
-            FString CoreName = OldName.Mid(StartIndex, EndIndex - StartIndex);
+            FString CoreName = OldName.Mid(2, OldName.Find(TEXT("_Inst")) - 2);
             FString NewName = TEXT("MI_") + CoreName;
             RenameAsset(SelectedAsset, NewName);
         }
         else if (!OldName.StartsWith(TEXT("MI_")))
         {
-            EAppReturnType::Type ReturnType = FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？"));
-            if (ReturnType == EAppReturnType::Yes)
+            if (FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？")) == EAppReturnType::Yes)
             {
                 FString NewName = TEXT("MI_") + OldName;
                 RenameAsset(SelectedAsset, NewName);
@@ -107,7 +95,10 @@ namespace MenuExtension_MaterialInstance {
         }
         else
         {
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NamePatternMismatch", "The name does not match the required pattern."));
+            if (!FMaterialInstanceRenamerModule::Get().IsBatchRename())
+            {
+                FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NamePatternMismatch", "The name does not match the required pattern."));
+            }
         }
     }
 
@@ -181,6 +172,8 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 
 void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 {
+    bIsBatchRename = true;
+
     FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
     IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
@@ -196,11 +189,10 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         MenuExtension_MaterialInstance::RenameMaterialInstance(AssetData);
     }
 
-    // Notify completion of renaming
     FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameComplete", "Renaming of all material instances is complete."));
+
+    bIsBatchRename = false;
 }
-
-
 
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
@@ -213,3 +205,4 @@ void FMaterialInstanceRenamerModule::ShutdownModule()
 #undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE(FMaterialInstanceRenamerModule, MaterialInstanceRenamer)
+
