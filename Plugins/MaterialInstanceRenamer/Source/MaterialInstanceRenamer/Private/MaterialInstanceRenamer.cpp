@@ -11,6 +11,7 @@
 #include "HAL/FileManager.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include <AssetRegistry/AssetRegistryModule.h>
+#include "Internationalization/Culture.h"
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
@@ -138,8 +139,20 @@ namespace MenuExtension_MaterialInstance {
         FToolMenuSection& Section = Menu->FindOrAddSection("GetAssetActions");
         Section.AddDynamicEntry(NAME_None, FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
             {
-                const TAttribute<FText> Label = LOCTEXT("Material_RenameToRecommendedPrefix", "Rename to Recommended Prefix");
-                const TAttribute<FText> ToolTip = LOCTEXT("Material_RenameToRecommendedPrefixTooltip", "Rename the selected material instance to the Unreal Engine recommended prefix.");
+                FText Label;
+                FText ToolTip;
+
+                if (FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName() == TEXT("ja"))
+                {
+                    Label = LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスに名前を変更");
+                    ToolTip = LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前をUnreal Engine推奨のプレフィックスに変更します。");
+                }
+                else
+                {
+                    Label = LOCTEXT("Material_RenameToRecommendedPrefix_EN", "Rename to Recommended Prefix");
+                    ToolTip = LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected material instance to the Unreal Engine recommended prefix.");
+                }
+
                 const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.MaterialInstanceActor");
                 const FToolMenuExecuteAction Action = FToolMenuExecuteAction::CreateStatic(&MenuExtension_MaterialInstance::OnExecuteAction);
 
@@ -149,10 +162,31 @@ namespace MenuExtension_MaterialInstance {
     }
 }
 
-void FMaterialInstanceRenamerModule::StartupModule()
+FText GetLocalizedText(const FString& Key)
 {
-    MenuExtension_MaterialInstance::AddMaterialContextMenuEntry();
-    AddToolMenuEntry();
+    if (FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName() == TEXT("ja"))
+    {
+        if (Key == "RenameAllMaterialInstances")
+            return LOCTEXT("RenameAllMaterialInstances_JP", "すべてのマテリアルインスタンスの名前を変更");
+        if (Key == "RenameAllMaterialInstancesTooltip")
+            return LOCTEXT("RenameAllMaterialInstancesTooltip_JP", "アセットフォルダ内のすべてのマテリアルインスタンスの名前を変更します");
+        if (Key == "Material_RenameToRecommendedPrefix")
+            return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスに名前を変更");
+        if (Key == "Material_RenameToRecommendedPrefixTooltip")
+            return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前をUnreal Engine推奨のプレフィックスに変更します。");
+    }
+    else
+    {
+        if (Key == "RenameAllMaterialInstances")
+            return LOCTEXT("RenameAllMaterialInstances_EN", "Rename All Material Instances");
+        if (Key == "RenameAllMaterialInstancesTooltip")
+            return LOCTEXT("RenameAllMaterialInstancesTooltip_EN", "Rename all material instances in the assets folder");
+        if (Key == "Material_RenameToRecommendedPrefix")
+            return LOCTEXT("Material_RenameToRecommendedPrefix_EN", "Rename to Recommended Prefix");
+        if (Key == "Material_RenameToRecommendedPrefixTooltip")
+            return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected material instance to the Unreal Engine recommended prefix.");
+    }
+    return FText::GetEmpty();
 }
 
 void FMaterialInstanceRenamerModule::AddToolMenuEntry()
@@ -161,13 +195,23 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
     UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
 
     FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer");
+
+    const FText Label = GetLocalizedText("RenameAllMaterialInstances");
+    const FText ToolTip = GetLocalizedText("RenameAllMaterialInstancesTooltip");
+
     Section.AddMenuEntry(
         "RenameAllMaterialInstances",
-        LOCTEXT("RenameAllMaterialInstances", "Rename All Material Instances"),
-        LOCTEXT("RenameAllMaterialInstancesTooltip", "Rename all material instances in the assets folder"),
+        Label,
+        ToolTip,
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
     );
+}
+
+void FMaterialInstanceRenamerModule::StartupModule()
+{
+    MenuExtension_MaterialInstance::AddMaterialContextMenuEntry();
+    AddToolMenuEntry();
 }
 
 void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
@@ -205,4 +249,3 @@ void FMaterialInstanceRenamerModule::ShutdownModule()
 #undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE(FMaterialInstanceRenamerModule, MaterialInstanceRenamer)
-
