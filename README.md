@@ -63,6 +63,10 @@ This plugin provides the following two main features:
 
 Version: 1.0 (Initial Release)
 
+## Planned Features
+
+*   **Multilingual Support**:  We are considering adding support for languages other than Japanese and English.
+
 ## Contribution
 
 Bug reports and feature requests are accepted in the Issues section of the GitHub repository.
@@ -139,6 +143,10 @@ Material Instance Renamer プラグインは、Unreal Engine 5 エディタ内�
 ## バージョン情報
 
 バージョン: 1.0 (初期バージョン)
+
+## 予定されている機能
+
+*   **多言語対応**: 日本語と英語に加えて、他の言語への対応を検討しています。
 
 ## コントリビューション
 
