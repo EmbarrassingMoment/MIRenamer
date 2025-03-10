@@ -17,45 +17,43 @@
 
 namespace MenuExtension_MaterialInstance {
 
-    static void RenameAsset(const FAssetData& SelectedAsset, const FString& NewName)
+    static FString GenerateUniqueAssetName(const FString& OldPackagePath, const FString& BaseName, IAssetRegistry& AssetRegistry)
     {
-        FString OldPackagePath = SelectedAsset.PackagePath.ToString();
-
-        FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
-        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-        IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-        FString FinalNewName = NewName;
+        FString FinalNewName = BaseName;
         FString NewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
         int32 Suffix = 1;
         while (AssetRegistry.GetAssetByObjectPath(*NewAssetPath).IsValid())
         {
-            FinalNewName = NewName + FString::Printf(TEXT("%d"), Suffix++);
+            FinalNewName = BaseName + FString::Printf(TEXT("%d"), Suffix++);
             NewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
         }
+        return FinalNewName;
+    }
 
-        UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
+    static void MarkPackageDirtyIfValid(const FAssetData& NewAssetData)
+    {
+        if (NewAssetData.IsValid())
+        {
+            UPackage* Package = NewAssetData.GetAsset()->GetOutermost();
+            if (Package)
+            {
+                Package->MarkPackageDirty();
+                UE_LOG(LogTemp, Log, TEXT("Package marked as dirty: %s"), *Package->GetName());
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to retrieve renamed asset."));
+        }
+    }
 
-        FAssetRenameData RenameData(SelectedAsset.GetAsset(), OldPackagePath, FinalNewName);
-        EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
+    static void HandleRenameResult(EAssetRenameResult RenameResult, const FString& OldPackagePath, const FString& FinalNewName, IAssetRegistry& AssetRegistry)
+    {
         if (RenameResult == EAssetRenameResult::Success)
         {
             FString FinalNewAssetPath = OldPackagePath / FinalNewName + TEXT(".") + FinalNewName;
             FAssetData NewAssetData = AssetRegistry.GetAssetByObjectPath(*FinalNewAssetPath);
-
-            if (NewAssetData.IsValid())
-            {
-                UPackage* Package = NewAssetData.GetAsset()->GetOutermost();
-                if (Package)
-                {
-                    Package->MarkPackageDirty();
-                    UE_LOG(LogTemp, Log, TEXT("Package marked as dirty: %s"), *Package->GetName());
-                }
-            }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("Failed to retrieve renamed asset."));
-            }
+            MarkPackageDirtyIfValid(NewAssetData);
         }
         else
         {
@@ -74,6 +72,24 @@ namespace MenuExtension_MaterialInstance {
             }
             FMessageDialog::Open(EAppMsgType::Ok, ErrorMessage);
         }
+    }
+
+    static void RenameAsset(const FAssetData& SelectedAsset, const FString& NewName)
+    {
+        FString OldPackagePath = SelectedAsset.PackagePath.ToString();
+
+        FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+        FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+        IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+        FString FinalNewName = GenerateUniqueAssetName(OldPackagePath, NewName, AssetRegistry);
+
+        UE_LOG(LogTemp, Log, TEXT("Renaming to: %s"), *FinalNewName);
+
+        FAssetRenameData RenameData(SelectedAsset.GetAsset(), OldPackagePath, FinalNewName);
+        EAssetRenameResult RenameResult = AssetToolsModule.Get().RenameAssetsWithDialog({ RenameData }, true);
+
+        HandleRenameResult(RenameResult, OldPackagePath, FinalNewName, AssetRegistry);
     }
 
     static void RenameMaterialInstance(const FAssetData& SelectedAsset)
