@@ -178,7 +178,7 @@ namespace MenuExtension_MaterialInstance {
     }
 }
 
-FText GetLocalizedText(const FString& Key)
+FText GetLocalizedText(const FString& Key, int32 Count = -1)
 {
     if (FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName() == TEXT("ja"))
     {
@@ -190,6 +190,8 @@ FText GetLocalizedText(const FString& Key)
             return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスに名前を変更");
         if (Key == "Material_RenameToRecommendedPrefixTooltip")
             return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前をUnreal Engine推奨のプレフィックスに変更します。");
+        if (Key == "RenameCompleteWithCount")
+            return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "すべてのマテリアルインスタンスの名前変更が完了しました。合計リネーム数: {0}"), Count);
     }
     else
     {
@@ -201,6 +203,8 @@ FText GetLocalizedText(const FString& Key)
             return LOCTEXT("Material_RenameToRecommendedPrefix_EN", "Rename to Recommended Prefix");
         if (Key == "Material_RenameToRecommendedPrefixTooltip")
             return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected material instance to the Unreal Engine recommended prefix.");
+        if (Key == "RenameCompleteWithCount")
+            return FText::Format(LOCTEXT("RenameCompleteWithCount_EN", "Renaming of all material instances is complete. Total renamed: {0}"), Count);
     }
     return FText::GetEmpty();
 }
@@ -244,12 +248,15 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
     Filter.ClassPaths.Add(UMaterialInstanceConstant::StaticClass()->GetClassPathName());
     AssetRegistry.GetAssets(Filter, MaterialInstanceAssets);
 
+    int32 RenamedCount = 0;
     for (const FAssetData& AssetData : MaterialInstanceAssets)
     {
         MenuExtension_MaterialInstance::RenameMaterialInstance(AssetData);
+        RenamedCount++;
     }
 
-    FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("RenameComplete", "Renaming of all material instances is complete."));
+    FText RenameCompleteMessage = GetLocalizedText("RenameCompleteWithCount", RenamedCount);
+    FMessageDialog::Open(EAppMsgType::Ok, RenameCompleteMessage);
 
     bIsBatchRename = false;
 }
