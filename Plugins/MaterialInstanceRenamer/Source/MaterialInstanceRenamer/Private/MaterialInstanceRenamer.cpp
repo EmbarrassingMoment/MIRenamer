@@ -17,6 +17,14 @@
 
 namespace MenuExtension_MaterialInstance {
 
+    /**
+     * Generates a unique asset name by appending a suffix if necessary.
+     *
+     * @param OldPackagePath The original package path.
+     * @param BaseName The base name for the new asset.
+     * @param AssetRegistry The asset registry to check for existing assets.
+     * @return A unique asset name.
+     */
     static FString GenerateUniqueAssetName(const FString& OldPackagePath, const FString& BaseName, IAssetRegistry& AssetRegistry)
     {
         FString FinalNewName = BaseName;
@@ -30,6 +38,11 @@ namespace MenuExtension_MaterialInstance {
         return FinalNewName;
     }
 
+    /**
+     * Marks the package as dirty if the asset data is valid.
+     *
+     * @param NewAssetData The asset data to check.
+     */
     static void MarkPackageDirtyIfValid(const FAssetData& NewAssetData)
     {
         if (NewAssetData.IsValid())
@@ -47,6 +60,14 @@ namespace MenuExtension_MaterialInstance {
         }
     }
 
+    /**
+     * Handles the result of the rename operation.
+     *
+     * @param RenameResult The result of the rename operation.
+     * @param OldPackagePath The original package path.
+     * @param FinalNewName The final new name of the asset.
+     * @param AssetRegistry The asset registry to check for the renamed asset.
+     */
     static void HandleRenameResult(EAssetRenameResult RenameResult, const FString& OldPackagePath, const FString& FinalNewName, IAssetRegistry& AssetRegistry)
     {
         if (RenameResult == EAssetRenameResult::Success)
@@ -74,6 +95,12 @@ namespace MenuExtension_MaterialInstance {
         }
     }
 
+    /**
+     * Renames the specified asset to the new name.
+     *
+     * @param SelectedAsset The asset to rename.
+     * @param NewName The new name for the asset.
+     */
     static void RenameAsset(const FAssetData& SelectedAsset, const FString& NewName)
     {
         FString OldPackagePath = SelectedAsset.PackagePath.ToString();
@@ -92,6 +119,11 @@ namespace MenuExtension_MaterialInstance {
         HandleRenameResult(RenameResult, OldPackagePath, FinalNewName, AssetRegistry);
     }
 
+    /**
+     * Renames the material instance asset to the recommended prefix.
+     *
+     * @param SelectedAsset The material instance asset to rename.
+     */
     static void RenameMaterialInstance(const FAssetData& SelectedAsset)
     {
         FString OldName = SelectedAsset.AssetName.ToString();
@@ -119,6 +151,11 @@ namespace MenuExtension_MaterialInstance {
         }
     }
 
+    /**
+     * Executes the rename action from the context menu.
+     *
+     * @param MenuContext The context of the tool menu.
+     */
     static void OnExecuteAction(const FToolMenuContext& MenuContext)
     {
         if (const UContentBrowserAssetContextMenuContext* Context = MenuContext.FindContext<UContentBrowserAssetContextMenuContext>())
@@ -145,6 +182,9 @@ namespace MenuExtension_MaterialInstance {
         }
     }
 
+    /**
+     * Adds the material context menu entry for renaming.
+     */
     static void AddMaterialContextMenuEntry()
     {
 #if WITH_EDITOR
@@ -178,6 +218,13 @@ namespace MenuExtension_MaterialInstance {
     }
 }
 
+/**
+ * Retrieves localized text based on the current culture.
+ *
+ * @param Key The key for the localized text.
+ * @param Count Optional count for formatting.
+ * @return The localized text.
+ */
 FText GetLocalizedText(const FString& Key, int32 Count = -1)
 {
     if (FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName() == TEXT("ja"))
@@ -209,6 +256,9 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
     return FText::GetEmpty();
 }
 
+/**
+ * Adds a tool menu entry for renaming all material instances.
+ */
 void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 {
     FToolMenuOwnerScoped OwnerScoped(UE_MODULE_NAME);
@@ -228,11 +278,13 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
     );
 }
 
+
 void FMaterialInstanceRenamerModule::StartupModule()
 {
     MenuExtension_MaterialInstance::AddMaterialContextMenuEntry();
     AddToolMenuEntry();
 }
+
 
 void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 {
