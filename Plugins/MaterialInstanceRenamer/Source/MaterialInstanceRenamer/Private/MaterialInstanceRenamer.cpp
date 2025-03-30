@@ -261,10 +261,12 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
  */
 void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 {
+    UE_LOG(LogTemp, Log, TEXT("Adding tool menu entry for renaming all material instances"));
+
     FToolMenuOwnerScoped OwnerScoped(UE_MODULE_NAME);
     UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
 
-    FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer");
+    FToolMenuSection& Section = Menu->FindOrAddSection("Tools");
 
     const FText Label = GetLocalizedText("RenameAllMaterialInstances");
     const FText ToolTip = GetLocalizedText("RenameAllMaterialInstancesTooltip");
@@ -276,7 +278,10 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
     );
+
+    UE_LOG(LogTemp, Log, TEXT("Tool menu entry added successfully"));
 }
+
 
 
 void FMaterialInstanceRenamerModule::StartupModule()
