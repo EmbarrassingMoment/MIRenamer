@@ -65,7 +65,7 @@ Version: 1.0 (Initial Release)
 
 ## Planned Features
 
-*   **Multilingual Support**:  We are considering adding support for languages other than Japanese and English.
+*   **Multilingual Support**:  I am considering adding support for languages other than Japanese and English.
 
 ## Contribution
 
