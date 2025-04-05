@@ -2,16 +2,16 @@
 
 #include "MaterialInstanceRenamer.h"
 #include "Modules/ModuleManager.h"
-#include "Materials/MaterialInstance.h"
 #include "ContentBrowserMenuContexts.h"
 #include "ToolMenus.h"
-#include "AssetRegistry/AssetData.h"
 #include "AssetToolsModule.h"
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
-#include "Materials/MaterialInstanceConstant.h"
-#include <AssetRegistry/AssetRegistryModule.h>
 #include "Internationalization/Culture.h"
+#include "Materials/MaterialInstance.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "AssetRegistry/AssetData.h"
+#include <AssetRegistry/AssetRegistryModule.h>
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
