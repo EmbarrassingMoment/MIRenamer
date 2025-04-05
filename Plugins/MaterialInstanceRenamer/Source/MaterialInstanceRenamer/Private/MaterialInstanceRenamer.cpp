@@ -2,22 +2,22 @@
 
 #include "MaterialInstanceRenamer.h"
 #include "Modules/ModuleManager.h"
+#include "Materials/MaterialInstance.h"
 #include "ContentBrowserMenuContexts.h"
 #include "ToolMenus.h"
+#include "AssetRegistry/AssetData.h"
 #include "AssetToolsModule.h"
 #include "Misc/Paths.h"
 #include "HAL/FileManager.h"
-#include "Internationalization/Culture.h"
-#include "Materials/MaterialInstance.h"
 #include "Materials/MaterialInstanceConstant.h"
-#include "AssetRegistry/AssetData.h"
 #include <AssetRegistry/AssetRegistryModule.h>
+#include "Internationalization/Culture.h"
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
-const FString PrefixM = TEXT("M_");
-const FString PrefixMI = TEXT("MI_");
-const FString SuffixInst = TEXT("_Inst");
+const FName PrefixM = "M_";
+const FName PrefixMI = "MI_";
+const FName SuffixInst = "_Inst";
 
 namespace MenuExtension_MaterialInstance {
 
@@ -128,22 +128,22 @@ namespace MenuExtension_MaterialInstance {
      *
      * @param SelectedAsset The material instance asset to rename.
      */
-    static void RenameMaterialInstance(const FAssetData& SelectedAsset)
+    void RenameMaterialInstance(const FAssetData& SelectedAsset)
     {
-        FString OldName = SelectedAsset.AssetName.ToString();
+        FName OldName = SelectedAsset.AssetName;
 
-        if (OldName.StartsWith(PrefixM) && OldName.Contains(SuffixInst))
+        if (OldName.ToString().StartsWith(PrefixM.ToString()) && OldName.ToString().Contains(SuffixInst.ToString()))
         {
-            FString CoreName = OldName.Mid(PrefixM.Len(), OldName.Find(SuffixInst) - PrefixM.Len());
-            FString NewName = PrefixMI + CoreName;
-            RenameAsset(SelectedAsset, NewName);
+            FString CoreName = OldName.ToString().Mid(PrefixM.ToString().Len(), OldName.ToString().Find(SuffixInst.ToString()) - PrefixM.ToString().Len());
+            FName NewName = FName(*PrefixMI.ToString() + CoreName);
+            RenameAsset(SelectedAsset, NewName.ToString());
         }
-        else if (!OldName.StartsWith(PrefixMI))
+        else if (!OldName.ToString().StartsWith(PrefixMI.ToString()))
         {
             if (FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？")) == EAppReturnType::Yes)
             {
-                FString NewName = PrefixMI + OldName;
-                RenameAsset(SelectedAsset, NewName);
+                FName NewName = FName(*PrefixMI.ToString() + OldName.ToString());
+                RenameAsset(SelectedAsset, NewName.ToString());
             }
         }
         else
@@ -154,7 +154,6 @@ namespace MenuExtension_MaterialInstance {
             }
         }
     }
-
     /**
      * Executes the rename action from the context menu.
      *
