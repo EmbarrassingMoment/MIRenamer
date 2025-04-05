@@ -15,6 +15,10 @@
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
+const FString PrefixM = TEXT("M_");
+const FString PrefixMI = TEXT("MI_");
+const FString SuffixInst = TEXT("_Inst");
+
 namespace MenuExtension_MaterialInstance {
 
     /**
@@ -128,17 +132,17 @@ namespace MenuExtension_MaterialInstance {
     {
         FString OldName = SelectedAsset.AssetName.ToString();
 
-        if (OldName.StartsWith(TEXT("M_")) && OldName.Contains(TEXT("_Inst")))
+        if (OldName.StartsWith(PrefixM) && OldName.Contains(SuffixInst))
         {
-            FString CoreName = OldName.Mid(2, OldName.Find(TEXT("_Inst")) - 2);
-            FString NewName = TEXT("MI_") + CoreName;
+            FString CoreName = OldName.Mid(PrefixM.Len(), OldName.Find(SuffixInst) - PrefixM.Len());
+            FString NewName = PrefixMI + CoreName;
             RenameAsset(SelectedAsset, NewName);
         }
-        else if (!OldName.StartsWith(TEXT("MI_")))
+        else if (!OldName.StartsWith(PrefixMI))
         {
             if (FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmRename", "名前を本当に変更していいですか？")) == EAppReturnType::Yes)
             {
-                FString NewName = TEXT("MI_") + OldName;
+                FString NewName = PrefixMI + OldName;
                 RenameAsset(SelectedAsset, NewName);
             }
         }
