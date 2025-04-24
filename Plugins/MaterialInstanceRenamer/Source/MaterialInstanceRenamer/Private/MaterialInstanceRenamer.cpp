@@ -242,6 +242,8 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
             return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前をUnreal Engine推奨のプレフィックスに変更します。");
         if (Key == "RenameCompleteWithCount")
             return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "すべてのマテリアルインスタンスの名前変更が完了しました。合計リネーム数: {0}"), Count);
+        if (Key == "ConfirmBatchRename")
+            return LOCTEXT("ConfirmBatchRename_JP", "すべてのマテリアルインスタンスの名前を変更しますか？");
     }
     else
     {
@@ -255,6 +257,8 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
             return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected material instance to the Unreal Engine recommended prefix.");
         if (Key == "RenameCompleteWithCount")
             return FText::Format(LOCTEXT("RenameCompleteWithCount_EN", "Renaming of all material instances is complete. Total renamed: {0}"), Count);
+        if (Key == "ConfirmBatchRename")
+            return LOCTEXT("ConfirmBatchRename_EN", "Do you want to rename all material instances?");
     }
     return FText::GetEmpty();
 }
@@ -295,9 +299,10 @@ void FMaterialInstanceRenamerModule::StartupModule()
 
 
 void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
-{
+{ 
+    
     // 確認ダイアログを表示
-    if (FMessageDialog::Open(EAppMsgType::YesNo, LOCTEXT("ConfirmBatchRename", "すべてのマテリアルインスタンスの名前を変更しますか？")) != EAppReturnType::Yes)
+    if (FMessageDialog::Open(EAppMsgType::YesNo, GetLocalizedText("ConfirmBatchRename")) != EAppReturnType::Yes)
     {
         // ユーザーが「いいえ」を選択した場合、処理を中断
         return;
