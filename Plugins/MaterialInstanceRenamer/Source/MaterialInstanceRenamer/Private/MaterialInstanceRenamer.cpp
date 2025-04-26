@@ -300,11 +300,9 @@ void FMaterialInstanceRenamerModule::StartupModule()
 
 void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 { 
-    
-    // 確認ダイアログを表示
+   
     if (FMessageDialog::Open(EAppMsgType::YesNo, GetLocalizedText("ConfirmBatchRename")) != EAppReturnType::Yes)
     {
-        // ユーザーが「いいえ」を選択した場合、処理を中断
         return;
     }
 
@@ -327,15 +325,11 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         bIsBatchRename = false;
         return;
     }
-
-    // 進行状況を表示するためのスコープタスクを作成
     FScopedSlowTask SlowTask(TotalAssets, LOCTEXT("RenamingMaterialInstances", "マテリアルインスタンスの名前を変更中..."));
-    SlowTask.MakeDialog(true); // ダイアログを表示
 
     int32 RenamedCount = 0;
     for (const FAssetData& AssetData : MaterialInstanceAssets)
     {
-        // 進行状況を更新
         SlowTask.EnterProgressFrame(1, FText::Format(LOCTEXT("RenamingAsset", "{0} をリネーム中..."), FText::FromName(AssetData.AssetName)));
 
         MenuExtension_MaterialInstance::RenameMaterialInstance(AssetData);
