@@ -136,51 +136,40 @@ void FAssetRenameUtil::RenameAsset(const FAssetData& SelectedAsset, const FStrin
 
 void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
 {
-    // Basic check if the asset is indeed a Material Instance
-    // Note: The actual UObject check might be better placed before calling this function,
-    // or ensure SelectedAsset is pre-filtered. But we keep the logic similar to original.
     if (!SelectedAsset.GetClass()->IsChildOf(UMaterialInstance::StaticClass()))
     {
-        // This case should ideally be handled by the caller (e.g., UI logic)
         UE_LOG(LogTemp, Warning, TEXT("Asset '%s' is not a Material Instance. Skipping rename logic."), *SelectedAsset.AssetName.ToString());
-        // Maybe show a message only if it's not a batch operation?
-        // if (!bIsBatch) { FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NotAMaterialInstanceUtil", "Selected asset is not a Material Instance.")); }
         return;
     }
 
     FName OldName = SelectedAsset.AssetName;
     FString OldNameStr = OldName.ToString();
 
-    // Rule 1: Check for M_..._Inst pattern
-    if (OldNameStr.StartsWith(PrefixM.ToString()) && OldNameStr.EndsWith(SuffixInst.ToString()))
+    // Rule: Remove all occurrences of "_Inst" from the end
+    while (OldNameStr.EndsWith(TEXT("_Inst")))
     {
-        // Extract core name: Remove M_ and _Inst
-        int32 CoreNameLen = OldNameStr.Len() - PrefixM.ToString().Len() - SuffixInst.ToString().Len();
-        if (CoreNameLen > 0)
-        {
-            FString CoreName = OldNameStr.Mid(PrefixM.ToString().Len(), CoreNameLen);
-            FName NewName = FName(*(PrefixMI.ToString() + CoreName));
-            UE_LOG(LogTemp, Log, TEXT("Applying Rule 1: Renaming '%s' to '%s'"), *OldNameStr, *NewName.ToString());
-            RenameAsset(SelectedAsset, NewName.ToString());
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Asset '%s' matches M_..._Inst pattern but has no core name."), *OldNameStr);
-        }
+        OldNameStr = OldNameStr.LeftChop(FString(TEXT("_Inst")).Len());
     }
-    // Rule 2: Check if it does NOT start with MI_
+
+    // Check if the name starts with "M_"
+    if (OldNameStr.StartsWith(PrefixM.ToString()))
+    {
+        // Extract core name: Remove "M_"
+        FString CoreName = OldNameStr.Mid(PrefixM.ToString().Len());
+        FName NewName = FName(*(PrefixMI.ToString() + CoreName));
+        UE_LOG(LogTemp, Log, TEXT("Renaming '%s' to '%s'"), *SelectedAsset.AssetName.ToString(), *NewName.ToString());
+        RenameAsset(SelectedAsset, NewName.ToString());
+    }
     else if (!OldNameStr.StartsWith(PrefixMI.ToString()))
     {
         FName NewName = FName(*(PrefixMI.ToString() + OldNameStr));
-        // In batch mode, rename directly. In single mode, ask for confirmation.
         if (bIsBatch)
         {
-            UE_LOG(LogTemp, Log, TEXT("Applying Rule 2 (Batch): Renaming '%s' to '%s'"), *OldNameStr, *NewName.ToString());
+            UE_LOG(LogTemp, Log, TEXT("Applying Rule (Batch): Renaming '%s' to '%s'"), *OldNameStr, *NewName.ToString());
             RenameAsset(SelectedAsset, NewName.ToString());
         }
         else
         {
-            // Confirmation dialog for single rename
             FText ConfirmTitle = LOCTEXT("ConfirmRenameTitle", "Confirm Rename");
             FText ConfirmMsg = FText::Format(
                 LOCTEXT("ConfirmRenameMsgFmt", "Asset '{0}' does not start with '{1}'.\nAdd the prefix to rename it to '{2}'?"),
@@ -191,7 +180,7 @@ void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, b
 
             if (FMessageDialog::Open(EAppMsgType::YesNo, ConfirmMsg, &ConfirmTitle) == EAppReturnType::Yes)
             {
-                UE_LOG(LogTemp, Log, TEXT("Applying Rule 2 (Confirmed): Renaming '%s' to '%s'"), *OldNameStr, *NewName.ToString());
+                UE_LOG(LogTemp, Log, TEXT("Applying Rule (Confirmed): Renaming '%s' to '%s'"), *OldNameStr, *NewName.ToString());
                 RenameAsset(SelectedAsset, NewName.ToString());
             }
             else
@@ -200,10 +189,8 @@ void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, b
             }
         }
     }
-    // Rule 3: Already starts with MI_
     else
     {
-        // Only show message if it's NOT a batch rename (batch should silently skip)
         if (!bIsBatch)
         {
             FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("AlreadyHasPrefix", "The asset already has the recommended 'MI_' prefix."));
@@ -211,6 +198,8 @@ void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, b
         UE_LOG(LogTemp, Log, TEXT("Asset '%s' already follows naming convention. Skipping."), *OldNameStr);
     }
 }
+
+
 
 // Undefine LOCTEXT_NAMESPACE at the end of the file
 #undef LOCTEXT_NAMESPACE
