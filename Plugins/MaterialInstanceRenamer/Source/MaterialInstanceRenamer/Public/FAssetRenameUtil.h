@@ -1,4 +1,5 @@
-// FAssetRenameUtil.h
+// Copyright 2025 kurorekish. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,7 +14,7 @@ public:
 	static FString GenerateUniqueAssetName(const FString& PackagePath, const FString& BaseName, IAssetRegistry& AssetRegistry);
 
 	// Renames the material instance asset based on rules.
-	static void RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch = false); // bIsBatch à¯êîÇí«â¡
+	static void RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch = false);
 
 	// Renames the specified asset to the new name.
 	static bool RenameAsset(const FAssetData& AssetToRename, const FString& NewName);

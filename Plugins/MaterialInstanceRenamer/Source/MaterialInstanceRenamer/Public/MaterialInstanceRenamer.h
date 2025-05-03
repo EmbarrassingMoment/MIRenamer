@@ -23,7 +23,7 @@ public:
 private:
 	void OnRenameAllMaterialInstancesClicked();
 	void AddToolMenuEntry();
-	void AddMaterialContextMenuEntry(); // Context Menu ’Ç‰ÁŠÖ”‚ğ‚±‚±‚ÉˆÚ“®
+	void AddMaterialContextMenuEntry(); 
 
-	bool bIsBatchRename = false; // ƒtƒ‰ƒO‚ğ’Ç‰Á
+	bool bIsBatchRename = false;
 };

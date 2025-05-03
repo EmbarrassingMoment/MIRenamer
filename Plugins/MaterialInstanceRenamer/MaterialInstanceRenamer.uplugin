@@ -8,7 +8,8 @@
 	"CreatedBy": "Kurorekishi",
 	"CreatedByURL": "https://github.com/EmbarrassingMoment",
 	"DocsURL": "",
-	"MarketplaceURL": "",
+	"FabURL": "com.epicgames.launcher://ue/Fab/product/ce379458-e348-4272-9262-8691173fc989"
+	"MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/ce379458-e348-4272-9262-8691173fc989",
 	"SupportURL": "https://github.com/EmbarrassingMoment/MIRenamer",
 	"CanContainContent": false,
 	"IsBetaVersion": false,

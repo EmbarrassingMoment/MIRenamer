@@ -1,7 +1,7 @@
 ﻿// Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "MaterialInstanceRenamer.h"
-#include "FAssetRenameUtil.h" // リネーム処理用ユーティリティ
+#include "FAssetRenameUtil.h" 
 #include "Modules/ModuleManager.h"
 #include "ToolMenus.h"
 #include "ContentBrowserModule.h" // For ExtendToolMenu_AssetContextMenu
