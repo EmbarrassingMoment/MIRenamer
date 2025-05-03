@@ -1,221 +1,159 @@
 // Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "FAssetRenameUtil.h"
-#include "MaterialInstanceRenamer.h"
-#include "Modules/ModuleManager.h"
-#include "ContentBrowserMenuContexts.h"
-#include "ToolMenus.h"
-#include "Materials/MaterialInstance.h"
-#include "Materials/MaterialInstanceConstant.h"
-#include "Internationalization/Culture.h"
-#include <AssetRegistry/AssetRegistryModule.h>
+#include "MaterialInstanceRenamer.h" // Include module header to access Get() for flags if needed (like IsBatchRename)
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetToolsModule.h" // Required for IAssetTools
+#include "Materials/MaterialInstanceConstant.h" // Required for UMaterialInstanceConstant
+#include "UObject/UObjectGlobals.h" // Required for FindObject / LoadObject
+#include "UObject/Package.h" // Required for UPackage, MarkPackageDirty
+#include "Misc/Paths.h" // Required for FPaths
+#include "Misc/MessageDialog.h" // For FMessageDialog (optional, for error reporting)
+#include "Logging/LogMacros.h" // For UE_LOG
 
-#define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
+// Define a unique log category if desired
+// DEFINE_LOG_CATEGORY_STATIC(LogMaterialInstanceRenamerUtil, Log, All);
 
-namespace MenuExtension_MaterialInstance {
+#define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule" // Use the same namespace for LOCTEXT
 
-    /**
-     * Renames the material instance asset to the recommended prefix.
-     *
-     * @param SelectedAsset The material instance asset to rename.
-     */
-    void RenameMaterialInstance(const FAssetData& SelectedAsset)
-    {
-        FAssetRenameUtil::RenameMaterialInstance(SelectedAsset);
-    }
-
-    /**
-     * Executes the rename action from the context menu.
-     *
-     * @param MenuContext The context of the tool menu.
-     */
-    static void OnExecuteAction(const FToolMenuContext& MenuContext)
-    {
-        if (const UContentBrowserAssetContextMenuContext* Context = MenuContext.FindContext<UContentBrowserAssetContextMenuContext>())
-        {
-            for (const FAssetData& SelectedAsset : Context->SelectedAssets)
-            {
-                if (UObject* Asset = SelectedAsset.GetAsset())
-                {
-                    if (Asset->IsA<UMaterialInstance>())
-                    {
-                        RenameMaterialInstance(SelectedAsset);
-                    }
-                    else
-                    {
-                        UE_LOG(LogTemp, Log, TEXT("Selected asset is not a Material Instance"));
-                        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NotAMaterialInstance", "The selected asset is not a Material Instance."));
-                    }
-                }
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Context not found"));
-        }
-    }
-
-    /**
-     * Adds the material context menu entry for renaming.
-     */
-    static void AddMaterialContextMenuEntry()
-    {
-#if WITH_EDITOR
-        FToolMenuOwnerScoped OwnerScoped(UE_MODULE_NAME);
-
-        UToolMenu* Menu = UE::ContentBrowser::ExtendToolMenu_AssetContextMenu(UMaterialInterface::StaticClass());
-
-        FToolMenuSection& Section = Menu->FindOrAddSection("GetAssetActions");
-        Section.AddDynamicEntry(NAME_None, FNewToolMenuSectionDelegate::CreateLambda([](FToolMenuSection& InSection)
-            {
-                FText Label;
-                FText ToolTip;
-
-                if (FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName() == TEXT("ja"))
-                {
-                    Label = LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスに名前を変更");
-                    ToolTip = LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前をUnreal Engine推奨のプレフィックスに変更します。");
-                }
-                else
-                {
-                    Label = LOCTEXT("Material_RenameToRecommendedPrefix_EN", "Rename to Recommended Prefix");
-                    ToolTip = LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected material instance to the Unreal Engine recommended prefix.");
-                }
-
-                const FSlateIcon Icon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.MaterialInstanceActor");
-                const FToolMenuExecuteAction Action = FToolMenuExecuteAction::CreateStatic(&MenuExtension_MaterialInstance::OnExecuteAction);
-
-                InSection.AddMenuEntry("Material_RenameToRecommendedPrefix", Label, ToolTip, Icon, Action);
-            }));
-#endif
-    }
-}
-
-/**
- * Retrieves localized text based on the current culture.
- *
- * @param Key The key for the localized text.
- * @param Count Optional count for formatting.
- * @return The localized text.
- */
-FText GetLocalizedText(const FString& Key, int32 Count = -1)
+// Placeholder implementation - needs refinement based on actual requirements
+FString FAssetRenameUtil::GenerateUniqueAssetName(const FString& PackagePath, const FString& BaseName, IAssetRegistry& AssetRegistry)
 {
-    if (FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName() == TEXT("ja"))
-    {
-        if (Key == "RenameAllMaterialInstances")
-            return LOCTEXT("RenameAllMaterialInstances_JP", "すべてのマテリアルインスタンスの名前を変更");
-        if (Key == "RenameAllMaterialInstancesTooltip")
-            return LOCTEXT("RenameAllMaterialInstancesTooltip_JP", "アセットフォルダ内のすべてのマテリアルインスタンスの名前を変更します");
-        if (Key == "Material_RenameToRecommendedPrefix")
-            return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスに名前を変更");
-        if (Key == "Material_RenameToRecommendedPrefixTooltip")
-            return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前をUnreal Engine推奨のプレフィックスに変更します。");
-        if (Key == "RenameCompleteWithCount")
-            return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "すべてのマテリアルインスタンスの名前変更が完了しました。合計リネーム数: {0}"), Count);
-        if (Key == "ConfirmBatchRename")
-            return LOCTEXT("ConfirmBatchRename_JP", "すべてのマテリアルインスタンスの名前を変更しますか？");
-    }
-    else
-    {
-        if (Key == "RenameAllMaterialInstances")
-            return LOCTEXT("RenameAllMaterialInstances_EN", "Rename All Material Instances");
-        if (Key == "RenameAllMaterialInstancesTooltip")
-            return LOCTEXT("RenameAllMaterialInstancesTooltip_EN", "Rename all material instances in the assets folder");
-        if (Key == "Material_RenameToRecommendedPrefix")
-            return LOCTEXT("Material_RenameToRecommendedPrefix_EN", "Rename to Recommended Prefix");
-        if (Key == "Material_RenameToRecommendedPrefixTooltip")
-            return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected material instance to the Unreal Engine recommended prefix.");
-        if (Key == "RenameCompleteWithCount")
-            return FText::Format(LOCTEXT("RenameCompleteWithCount_EN", "Renaming of all material instances is complete. Total renamed: {0}"), Count);
-        if (Key == "ConfirmBatchRename")
-            return LOCTEXT("ConfirmBatchRename_EN", "Do you want to rename all material instances?");
-    }
-    return FText::GetEmpty();
+	FString CandidateName;
+	int32 Counter = 0;
+	bool bFoundUniqueName = false;
+
+	// Simple approach: append _Number until unique
+	while (!bFoundUniqueName)
+	{
+		if (Counter == 0)
+		{
+			CandidateName = BaseName;
+		}
+		else
+		{
+			CandidateName = FString::Printf(TEXT("%s_%d"), *BaseName, Counter);
+		}
+
+		FString CandidatePackagePath = PackagePath + TEXT("/") + CandidateName;
+		FAssetData ExistingAsset = AssetRegistry.GetAssetByObjectPath(FSoftObjectPath(CandidatePackagePath));
+
+		if (!ExistingAsset.IsValid())
+		{
+			bFoundUniqueName = true;
+		}
+		else
+		{
+			Counter++;
+		}
+	}
+	return CandidateName;
 }
 
-/**
- * Adds a tool menu entry for renaming all material instances.
- */
-void FMaterialInstanceRenamerModule::AddToolMenuEntry()
+
+// Renames the material instance asset based on rules.
+void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
 {
-    UE_LOG(LogTemp, Log, TEXT("Adding tool menu entry for renaming all material instances"));
+	const FString RecommendedPrefix = TEXT("MI_");
+	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
-    FToolMenuOwnerScoped OwnerScoped(UE_MODULE_NAME);
-    UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
+	// Check if the asset already has the recommended prefix
+	if (OldAssetName.StartsWith(RecommendedPrefix))
+	{
+		// UE_LOG(LogMaterialInstanceRenamerUtil, Verbose, TEXT("Asset '%s' already has the recommended prefix."), *OldAssetName);
+		return; // No rename needed
+	}
 
-    FToolMenuSection& Section = Menu->FindOrAddSection("Tools");
+	// Construct the new base name (remove existing common prefixes if necessary)
+	// This logic might need adjustment depending on how aggressively you want to rename.
+	// Example: If it's M_MyMaterial_Inst, should it become MI_MyMaterial_Inst or MI_Inst?
+	// Current logic: MI_ + OriginalAssetName
+	FString BaseName = OldAssetName;
+	FString NewAssetName = RecommendedPrefix + BaseName;
 
-    const FText Label = GetLocalizedText("RenameAllMaterialInstances");
-    const FText ToolTip = GetLocalizedText("RenameAllMaterialInstancesTooltip");
-
-    Section.AddMenuEntry(
-        "RenameAllMaterialInstances",
-        Label,
-        ToolTip,
-        FSlateIcon(),
-        FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
-    );
-
-    UE_LOG(LogTemp, Log, TEXT("Tool menu entry added successfully"));
+	// Call the generic RenameAsset function
+	RenameAsset(SelectedAsset, NewAssetName);
 }
 
-void FMaterialInstanceRenamerModule::StartupModule()
+
+// Renames the specified asset to the new name. Returns true on success.
+bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FString& NewName)
 {
-    MenuExtension_MaterialInstance::AddMaterialContextMenuEntry();
-    AddToolMenuEntry();
+	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+	IAssetTools& AssetTools = AssetToolsModule.Get();
+
+	TArray<FAssetRenameData> AssetsToRenameData;
+	FString PackagePath = AssetToRename.PackagePath.ToString();
+	FString NewPackagePath = PackagePath; // Assuming rename within the same folder
+	FString NewAssetPath = FPaths::Combine(NewPackagePath, NewName);
+
+	// Check if the target name already exists (basic check)
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	FAssetData ExistingAsset = AssetRegistry.GetAssetByObjectPath(FSoftObjectPath(NewAssetPath));
+
+	if (ExistingAsset.IsValid() && ExistingAsset.PackageName != AssetToRename.PackageName)
+	{
+		// Optionally handle name collision (e.g., generate unique name or skip/warn)
+		// For simplicity, we log and skip here. Could use GenerateUniqueAssetName.
+		UE_LOG(LogTemp, Warning, TEXT("Rename skipped for '%s': Target name '%s' already exists."), *AssetToRename.GetObjectPathString(), *NewName);
+		// In batch mode, we might not want message dialogs
+		if (!FMaterialInstanceRenamerModule::Get().IsBatchRename())
+		{
+			FText ErrorTitle = LOCTEXT("RenameFailedTitle", "Rename Failed");
+			FText ErrorMsg = FText::Format(LOCTEXT("RenameFailedNameCollision", "Could not rename '{0}' to '{1}' because an asset with that name already exists in this folder."), FText::FromName(AssetToRename.AssetName), FText::FromString(NewName));
+			FMessageDialog::Open(EAppMsgType::Ok, ErrorMsg, &ErrorTitle);
+		}
+		return false;
+	}
+
+	// Prepare rename data
+	UObject* AssetObject = AssetToRename.GetAsset(); // Load the asset
+	if (!AssetObject)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to load asset '%s' for renaming."), *AssetToRename.GetObjectPathString());
+		return false;
+	}
+
+	AssetsToRenameData.Emplace(AssetObject, NewPackagePath, NewName);
+
+	// Execute the rename
+	bool bSuccess = AssetTools.RenameAssets(AssetsToRenameData);
+
+	if (bSuccess)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Successfully renamed '%s' to '%s'"), *AssetToRename.AssetName.ToString(), *NewName);
+		// Optionally mark package dirty (though RenameAssets often handles this)
+		// MarkPackageDirtyIfValid(AssetRegistry.GetAssetByObjectPath(FSoftObjectPath(NewAssetPath)));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to rename asset '%s' to '%s' using AssetTools."), *AssetToRename.AssetName.ToString(), *NewName);
+		// Optionally show error message only if not in batch mode
+		if (!FMaterialInstanceRenamerModule::Get().IsBatchRename())
+		{
+            FText ErrorTitle = LOCTEXT("RenameFailedTitle", "Rename Failed");
+			FText ErrorMsg = FText::Format(LOCTEXT("RenameFailedGeneric", "An error occurred while renaming '{0}'."), FText::FromName(AssetToRename.AssetName));
+			FMessageDialog::Open(EAppMsgType::Ok, ErrorMsg, &ErrorTitle);
+		}
+	}
+
+	return bSuccess;
 }
 
-void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
+
+// Marks the package as dirty if the asset data is valid.
+void FAssetRenameUtil::MarkPackageDirtyIfValid(const FAssetData& NewAssetData)
 {
-    if (FMessageDialog::Open(EAppMsgType::YesNo, GetLocalizedText("ConfirmBatchRename")) != EAppReturnType::Yes)
-    {
-        return;
-    }
-
-    bIsBatchRename = true;
-
-    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-    IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-
-    TArray<FAssetData> MaterialInstanceAssets;
-    FARFilter Filter;
-    Filter.PackagePaths.Add("/Game");
-    Filter.bRecursivePaths = true;
-    Filter.ClassPaths.Add(UMaterialInstanceConstant::StaticClass()->GetClassPathName());
-    AssetRegistry.GetAssets(Filter, MaterialInstanceAssets);
-
-    int32 TotalAssets = MaterialInstanceAssets.Num();
-    if (TotalAssets == 0)
-    {
-        FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NoAssetsFound", "マテリアルインスタンスが見つかりませんでした。"));
-        bIsBatchRename = false;
-        return;
-    }
-    FScopedSlowTask SlowTask(TotalAssets, LOCTEXT("RenamingMaterialInstances", "マテリアルインスタンスの名前を変更中..."));
-
-    int32 RenamedCount = 0;
-    for (const FAssetData& AssetData : MaterialInstanceAssets)
-    {
-        SlowTask.EnterProgressFrame(1, FText::Format(LOCTEXT("RenamingAsset", "{0} をリネーム中..."), FText::FromName(AssetData.AssetName)));
-
-        FAssetRenameUtil::RenameMaterialInstance(AssetData, true);
-        RenamedCount++;
-    }
-
-    FText RenameCompleteMessage = GetLocalizedText("RenameCompleteWithCount", RenamedCount);
-    FMessageDialog::Open(EAppMsgType::Ok, RenameCompleteMessage);
-
-    bIsBatchRename = false;
+	if (NewAssetData.IsValid())
+	{
+		UPackage* Package = FindPackage(nullptr, *NewAssetData.PackageName.ToString());
+		if (Package)
+		{
+			Package->MarkPackageDirty();
+		}
+	}
 }
 
-void FMaterialInstanceRenamerModule::ShutdownModule()
-{
-    if (UToolMenus::IsToolMenuUIEnabled())
-    {
-        UToolMenus::UnregisterOwner(this);
-    }
-}
 
 #undef LOCTEXT_NAMESPACE
-
-IMPLEMENT_MODULE(FMaterialInstanceRenamerModule, MaterialInstanceRenamer)
