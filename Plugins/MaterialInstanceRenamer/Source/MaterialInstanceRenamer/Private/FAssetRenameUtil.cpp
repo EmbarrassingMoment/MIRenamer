@@ -57,22 +57,81 @@ void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, b
 	const FString RecommendedPrefix = TEXT("MI_");
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
-	// Check if the asset already has the recommended prefix
-	if (OldAssetName.StartsWith(RecommendedPrefix))
+	// 既に正しいプレフィックスが付いている場合はスキップ
+	if (ShouldSkipRename(OldAssetName, RecommendedPrefix, bIsBatch))
 	{
-		// UE_LOG(LogMaterialInstanceRenamerUtil, Verbose, TEXT("Asset '%s' already has the recommended prefix."), *OldAssetName);
-		return; // No rename needed
+		return;
 	}
 
-	// Construct the new base name (remove existing common prefixes if necessary)
-	// This logic might need adjustment depending on how aggressively you want to rename.
-	// Example: If it's M_MyMaterial_Inst, should it become MI_MyMaterial_Inst or MI_Inst?
-	// Current logic: MI_ + OriginalAssetName
-	FString BaseName = OldAssetName;
+	// ベース名を抽出
+	FString BaseName = ExtractBaseName(OldAssetName, bIsBatch);
+	if (BaseName.IsEmpty())
+	{
+		return; // 無効なパターンの場合はスキップ
+	}
+
+	// 新しい名前を構築
 	FString NewAssetName = RecommendedPrefix + BaseName;
 
-	// Call the generic RenameAsset function
+	// アセットのリネームを実行
 	RenameAsset(SelectedAsset, NewAssetName);
+}
+
+bool FAssetRenameUtil::ShouldSkipRename(const FString& OldAssetName, const FString& RecommendedPrefix, bool bIsBatch)
+{
+	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(TEXT("MI_M_")))
+	{
+		if (!bIsBatch)
+		{
+			FText MessageTitle = LOCTEXT("RenameSkippedTitle", "Rename Skipped");
+			FText MessageContent = FText::Format(
+				LOCTEXT("RenameSkippedAlreadyPrefixed", "Asset '{0}' is already prefixed with '{1}' and was excluded from renaming."),
+				FText::FromString(OldAssetName),
+				FText::FromString(RecommendedPrefix)
+			);
+			FMessageDialog::Open(EAppMsgType::Ok, MessageContent, &MessageTitle);
+		}
+		return true;
+	}
+	return false;
+}
+
+FString FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, bool bIsBatch)
+{
+	FString BaseName;
+
+	if (OldAssetName.StartsWith(TEXT("MI_M_")) && OldAssetName.EndsWith(TEXT("_Inst")))
+	{
+		BaseName = OldAssetName.Mid(5, OldAssetName.Len() - 10); // "MI_M_" と "_Inst" を除去
+	}
+	else if (OldAssetName.StartsWith(TEXT("MI_M_")))
+	{
+		BaseName = OldAssetName.Mid(5); // "MI_M_" を除去
+	}
+	else if (OldAssetName.StartsWith(TEXT("M_")) && OldAssetName.EndsWith(TEXT("_Inst")))
+	{
+		BaseName = OldAssetName.Mid(2, OldAssetName.Len() - 7); // "M_" と "_Inst" を除去
+	}
+	else if (OldAssetName.EndsWith(TEXT("_Inst")))
+	{
+		BaseName = OldAssetName.Left(OldAssetName.Len() - 5); // "_Inst" を除去
+	}
+	else
+	{
+		if (!bIsBatch)
+		{
+			FText MessageTitle = LOCTEXT("RenameSkippedTitle", "Rename Skipped");
+			FText MessageContent = FText::Format(
+				LOCTEXT("RenameSkippedInvalidPattern", "Asset '{0}' does not match the expected naming pattern and was excluded from renaming."),
+				FText::FromString(OldAssetName)
+			);
+			FMessageDialog::Open(EAppMsgType::Ok, MessageContent, &MessageTitle);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Asset '%s' does not match the expected naming pattern."), *OldAssetName);
+		return FString(); // 空文字列を返して無効を示す
+	}
+
+	return BaseName;
 }
 
 
