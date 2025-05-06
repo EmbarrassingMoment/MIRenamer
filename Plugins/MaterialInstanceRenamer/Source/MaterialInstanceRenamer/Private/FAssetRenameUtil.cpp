@@ -11,9 +11,6 @@
 #include "Misc/MessageDialog.h" // For FMessageDialog (optional, for error reporting)
 #include "Logging/LogMacros.h" // For UE_LOG
 
-// Define a unique log category if desired
-// DEFINE_LOG_CATEGORY_STATIC(LogMaterialInstanceRenamerUtil, Log, All);
-
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule" // Use the same namespace for LOCTEXT
 
 // Placeholder implementation - needs refinement based on actual requirements
@@ -50,30 +47,29 @@ FString FAssetRenameUtil::GenerateUniqueAssetName(const FString& PackagePath, co
 	return CandidateName;
 }
 
-
 // Renames the material instance asset based on rules.
 void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
 {
 	const FString RecommendedPrefix = TEXT("MI_");
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
-	// 既に正しいプレフィックスが付いている場合はスキップ
+	// Skip if the asset already has the correct prefix
 	if (ShouldSkipRename(OldAssetName, RecommendedPrefix, bIsBatch))
 	{
 		return;
 	}
 
-	// ベース名を抽出
+	// Extract the base name
 	FString BaseName = ExtractBaseName(OldAssetName, bIsBatch);
 	if (BaseName.IsEmpty())
 	{
-		return; // 無効なパターンの場合はスキップ
+		return; // Skip if the pattern is invalid
 	}
 
-	// 新しい名前を構築
+	// Construct the new name
 	FString NewAssetName = RecommendedPrefix + BaseName;
 
-	// アセットのリネームを実行
+	// Perform the asset rename
 	RenameAsset(SelectedAsset, NewAssetName);
 }
 
@@ -102,19 +98,19 @@ FString FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, bool bIsB
 
 	if (OldAssetName.StartsWith(TEXT("MI_M_")) && OldAssetName.EndsWith(TEXT("_Inst")))
 	{
-		BaseName = OldAssetName.Mid(5, OldAssetName.Len() - 10); // "MI_M_" と "_Inst" を除去
+		BaseName = OldAssetName.Mid(5, OldAssetName.Len() - 10); // Remove "MI_M_" and "_Inst"
 	}
 	else if (OldAssetName.StartsWith(TEXT("MI_M_")))
 	{
-		BaseName = OldAssetName.Mid(5); // "MI_M_" を除去
+		BaseName = OldAssetName.Mid(5); // Remove "MI_M_"
 	}
 	else if (OldAssetName.StartsWith(TEXT("M_")) && OldAssetName.EndsWith(TEXT("_Inst")))
 	{
-		BaseName = OldAssetName.Mid(2, OldAssetName.Len() - 7); // "M_" と "_Inst" を除去
+		BaseName = OldAssetName.Mid(2, OldAssetName.Len() - 7); // Remove "M_" and "_Inst"
 	}
 	else if (OldAssetName.EndsWith(TEXT("_Inst")))
 	{
-		BaseName = OldAssetName.Left(OldAssetName.Len() - 5); // "_Inst" を除去
+		BaseName = OldAssetName.Left(OldAssetName.Len() - 5); // Remove "_Inst"
 	}
 	else
 	{
@@ -128,12 +124,11 @@ FString FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, bool bIsB
 			FMessageDialog::Open(EAppMsgType::Ok, MessageContent, &MessageTitle);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Asset '%s' does not match the expected naming pattern."), *OldAssetName);
-		return FString(); // 空文字列を返して無効を示す
+		return FString(); // Return empty string to indicate invalid
 	}
 
 	return BaseName;
 }
-
 
 // Renames the specified asset to the new name. Returns true on success.
 bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FString& NewName)
@@ -185,7 +180,6 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 	return bSuccess;
 }
 
-
 // Marks the package as dirty if the asset data is valid.
 void FAssetRenameUtil::MarkPackageDirtyIfValid(const FAssetData& NewAssetData)
 {
@@ -198,6 +192,5 @@ void FAssetRenameUtil::MarkPackageDirtyIfValid(const FAssetData& NewAssetData)
 		}
 	}
 }
-
 
 #undef LOCTEXT_NAMESPACE
