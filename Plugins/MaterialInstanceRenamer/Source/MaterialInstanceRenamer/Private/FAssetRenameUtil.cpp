@@ -29,7 +29,7 @@ FString FAssetRenameUtil::GenerateUniqueAssetName(const FString& PackagePath, co
 		}
 		else
 		{
-			CandidateName = FString::Printf(TEXT("%s_%d"), *BaseName, Counter);
+			CandidateName = FString::Printf(TEXT("%s%d"), *BaseName, Counter);
 		}
 
 		FString CandidatePackagePath = PackagePath + TEXT("/") + CandidateName;
