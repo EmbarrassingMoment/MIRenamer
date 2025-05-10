@@ -35,16 +35,16 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
 
 	if (CultureName == TEXT("ja"))
 	{
-		if (Key == "RenameAllMaterialInstances") return LOCTEXT("RenameAllMaterialInstances_JP", "すべてのマテリアルインスタンスの名前を変更");
-		if (Key == "RenameAllMaterialInstancesTooltip") return LOCTEXT("RenameAllMaterialInstancesTooltip_JP", "プロジェクト内のすべてのマテリアルインスタンスの名前を推奨プレフィックスに変更します");
-		if (Key == "Material_RenameToRecommendedPrefix") return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスに名前を変更");
-		if (Key == "Material_RenameToRecommendedPrefixTooltip") return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスの名前を推奨プレフィックス(MI_)に変更します。");
-		if (Key == "RenameCompleteWithCount") return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "すべてのマテリアルインスタンスの名前変更が完了しました。合計リネーム数: {0}"), FText::AsNumber(Count));
-		if (Key == "ConfirmBatchRename") return LOCTEXT("ConfirmBatchRename_JP", "プロジェクト内のすべてのマテリアルインスタンスの名前を変更しますか？ (MI_プレフィックス)");
-		if (Key == "NoAssetsFound") return LOCTEXT("NoAssetsFound_JP", "リネーム対象のマテリアルインスタンスが見つかりませんでした。");
-		if (Key == "RenamingMaterialInstances") return LOCTEXT("RenamingMaterialInstances_JP", "マテリアルインスタンスの名前を変更中...");
-		if (Key == "RenamingAsset") return LOCTEXT("RenamingAsset_JP", "{0} をリネーム中...");
-		if (Key == "NotAMaterialInstance") return LOCTEXT("NotAMaterialInstance_JP", "選択されたアセットはマテリアルインスタンスではありません。");
+		if (Key == "RenameAllMaterialInstances") return LOCTEXT("RenameAllMaterialInstances_JP", "Rename all material instances");
+		if (Key == "RenameAllMaterialInstancesTooltip") return LOCTEXT("RenameAllMaterialInstancesTooltip_JP", "Rename all material instances in the project to the recommended prefix.");
+		if (Key == "Material_RenameToRecommendedPrefix") return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "Rename to recommended prefix");
+		if (Key == "Material_RenameToRecommendedPrefixTooltip") return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "Rename the selected material instance(s) to the recommended prefix (MI_).");
+		if (Key == "RenameCompleteWithCount") return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "Renaming of all material instances is complete. Total renamed: {0}"), FText::AsNumber(Count));
+		if (Key == "ConfirmBatchRename") return LOCTEXT("ConfirmBatchRename_JP", "Do you want to rename all material instances in the project? (MI_ prefix)");
+		if (Key == "NoAssetsFound") return LOCTEXT("NoAssetsFound_JP", "No material instances found to rename.");
+		if (Key == "RenamingMaterialInstances") return LOCTEXT("RenamingMaterialInstances_JP", "Renaming material instances...");
+		if (Key == "RenamingAsset") return LOCTEXT("RenamingAsset_JP", "Renaming {0}...");
+		if (Key == "NotAMaterialInstance") return LOCTEXT("NotAMaterialInstance_JP", "The selected asset is not a material instance.");
 	}
 	else // Default to English
 	{

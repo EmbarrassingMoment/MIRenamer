@@ -16,6 +16,10 @@ public:
 	// Renames the material instance asset based on rules.
 	static void RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch = false);
 
+	static bool ShouldSkipRename(const FString& OldAssetName, const FString& RecommendedPrefix, bool bIsBatch);
+
+	static FString ExtractBaseName(const FString& OldAssetName, bool bIsBatch);
+
 	// Renames the specified asset to the new name.
 	static bool RenameAsset(const FAssetData& AssetToRename, const FString& NewName);
 
