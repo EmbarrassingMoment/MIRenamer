@@ -140,15 +140,13 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 	FString PackagePath = AssetToRename.PackagePath.ToString();
 	FString NewPackagePath = PackagePath; // Assuming rename within the same folder
 
-	// アセットレジストリを取得
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
 	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
-	// 衝突を避けるためのユニークな名前を生成
 	FString UniqueName = GenerateUniqueAssetName(NewPackagePath, NewName, AssetRegistry);
 	FString NewAssetPath = FPaths::Combine(NewPackagePath, UniqueName);
 
-	// アセットをロード
+
 	UObject* AssetObject = AssetToRename.GetAsset();
 	if (!AssetObject)
 	{
@@ -156,10 +154,9 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 		return false;
 	}
 
-	// リネームデータを準備
 	AssetsToRenameData.Emplace(AssetObject, NewPackagePath, UniqueName);
 
-	// リネームを実行
+
 	bool bSuccess = AssetTools.RenameAssets(AssetsToRenameData);
 
 	if (bSuccess)
