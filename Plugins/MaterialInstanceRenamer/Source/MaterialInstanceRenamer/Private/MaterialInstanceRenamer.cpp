@@ -221,10 +221,11 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 	}
 
 	FToolMenuOwnerScoped OwnerScoped(this);
-	// Use a more specific menu location if possible, e.g., under Asset actions or a custom menu
-	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools"); // Add to main 'Tools' menu
+	// Add to main 'Tools' menu
+	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
 
-	FToolMenuSection& Section = Menu->FindOrAddSection("Tools"); // Or a more specific section
+	// Create a new section named "MaterialInstanceRenamer"
+	FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer", LOCTEXT("MaterialInstanceRenamerSection", "MaterialInstanceRenamer"));
 
 	const FText Label = GetLocalizedText("RenameAllMaterialInstances");
 	const FText ToolTip = GetLocalizedText("RenameAllMaterialInstancesTooltip");
