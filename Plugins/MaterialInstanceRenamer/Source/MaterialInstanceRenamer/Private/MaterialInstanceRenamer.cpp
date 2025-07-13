@@ -35,16 +35,16 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
 
 	if (CultureName == TEXT("ja"))
 	{
-		if (Key == "RenameAllMaterialInstances") return LOCTEXT("RenameAllMaterialInstances_JP", "Rename all material instances");
-		if (Key == "RenameAllMaterialInstancesTooltip") return LOCTEXT("RenameAllMaterialInstancesTooltip_JP", "Rename all material instances in the project to the recommended prefix.");
-		if (Key == "Material_RenameToRecommendedPrefix") return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "Rename to recommended prefix");
-		if (Key == "Material_RenameToRecommendedPrefixTooltip") return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "Rename the selected material instance(s) to the recommended prefix (MI_).");
-		if (Key == "RenameCompleteWithCount") return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "Renaming of all material instances is complete. Total renamed: {0}"), FText::AsNumber(Count));
-		if (Key == "ConfirmBatchRename") return LOCTEXT("ConfirmBatchRename_JP", "Do you want to rename all material instances in the project? (MI_ prefix)");
-		if (Key == "NoAssetsFound") return LOCTEXT("NoAssetsFound_JP", "No material instances found to rename.");
-		if (Key == "RenamingMaterialInstances") return LOCTEXT("RenamingMaterialInstances_JP", "Renaming material instances...");
-		if (Key == "RenamingAsset") return LOCTEXT("RenamingAsset_JP", "Renaming {0}...");
-		if (Key == "NotAMaterialInstance") return LOCTEXT("NotAMaterialInstance_JP", "The selected asset is not a material instance.");
+		if (Key == "RenameAllMaterialInstances") return LOCTEXT("RenameAllMaterialInstances_JP", "すべてのマテリアルインスタンスをリネーム");
+		if (Key == "RenameAllMaterialInstancesTooltip") return LOCTEXT("RenameAllMaterialInstancesTooltip_JP", "プロジェクト内のすべてのマテリアルインスタンスを推奨プレフィックスにリネームします。");
+		if (Key == "Material_RenameToRecommendedPrefix") return LOCTEXT("Material_RenameToRecommendedPrefix_JP", "推奨プレフィックスにリネーム");
+		if (Key == "Material_RenameToRecommendedPrefixTooltip") return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_JP", "選択したマテリアルインスタンスを推奨プレフィックス（MI_）にリネームします。");
+		if (Key == "RenameCompleteWithCount") return FText::Format(LOCTEXT("RenameCompleteWithCount_JP", "すべてのマテリアルインスタンスのリネームが完了しました。リネーム数: {0}"), FText::AsNumber(Count));
+		if (Key == "ConfirmBatchRename") return LOCTEXT("ConfirmBatchRename_JP", "プロジェクト内のすべてのマテリアルインスタンスをリネームしますか？（MI_）");
+		if (Key == "NoAssetsFound") return LOCTEXT("NoAssetsFound_JP", "リネーム対象のマテリアルインスタンスが見つかりませんでした。");
+		if (Key == "RenamingMaterialInstances") return LOCTEXT("RenamingMaterialInstances_JP", "マテリアルインスタンスをリネーム中...");
+		if (Key == "RenamingAsset") return LOCTEXT("RenamingAsset_JP", "{0} をリネーム中...");
+		if (Key == "NotAMaterialInstance") return LOCTEXT("NotAMaterialInstance_JP", "選択されたアセットはマテリアルインスタンスではありません。");
 	}
 	else // Default to English
 	{
@@ -53,7 +53,7 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
 		if (Key == "Material_RenameToRecommendedPrefix") return LOCTEXT("Material_RenameToRecommendedPrefix_EN", "Rename to Recommended Prefix");
 		if (Key == "Material_RenameToRecommendedPrefixTooltip") return LOCTEXT("Material_RenameToRecommendedPrefixTooltip_EN", "Rename the selected Material Instance(s) to the recommended prefix (MI_).");
 		if (Key == "RenameCompleteWithCount") return FText::Format(LOCTEXT("RenameCompleteWithCount_EN", "Renaming of all Material Instances is complete. Total renamed: {0}"), FText::AsNumber(Count));
-		if (Key == "ConfirmBatchRename") return LOCTEXT("ConfirmBatchRename_EN", "Do you want to rename all Material Instances in the project? (MI_ prefix)");
+		if (Key == "ConfirmBatchRename") return LOCTEXT("ConfirmBatchRename_EN", "Do you want to rename all Material Instances in the project? (MI_)");
 		if (Key == "NoAssetsFound") return LOCTEXT("NoAssetsFound_EN", "No Material Instances found to rename.");
 		if (Key == "RenamingMaterialInstances") return LOCTEXT("RenamingMaterialInstances_EN", "Renaming Material Instances...");
 		if (Key == "RenamingAsset") return LOCTEXT("RenamingAsset_EN", "Renaming {0}...");
@@ -221,10 +221,11 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 	}
 
 	FToolMenuOwnerScoped OwnerScoped(this);
-	// Use a more specific menu location if possible, e.g., under Asset actions or a custom menu
-	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools"); // Add to main 'Tools' menu
+	// Add to main 'Tools' menu
+	UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
 
-	FToolMenuSection& Section = Menu->FindOrAddSection("Tools"); // Or a more specific section
+	// Create a new section named "MaterialInstanceRenamer"
+	FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer", LOCTEXT("MaterialInstanceRenamerSection", "MaterialInstanceRenamer"));
 
 	const FText Label = GetLocalizedText("RenameAllMaterialInstances");
 	const FText ToolTip = GetLocalizedText("RenameAllMaterialInstancesTooltip");
