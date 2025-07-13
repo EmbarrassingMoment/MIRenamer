@@ -48,14 +48,18 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 4.  All Material Instances within the project will be scanned and renamed according to the naming convention.
 5.  A dialog box indicating the results will be displayed upon completion.
 
+## Changelog
+
+### v1.1.0 (2025-07-13)
+* **UI Improvement:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
+* **Compatibility:** Added support for Unreal Engine 5.6.
+
 ## License
 
 This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengine.com/eula).
 
 ---
 ---
-
-
 
 
 ## 概要
@@ -105,6 +109,12 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 3.  確認ダイアログが表示されるので、「はい」を選択します。
 4.  プロジェクト内のすべてのマテリアルインスタンスがスキャンされ、命名規則に従ってリネーム処理が実行されます。
 5.  処理完了後、結果を示すダイアログが表示されます。
+
+## 変更履歴 (Changelog)
+
+### v1.1.0 (2025-07-13)
+* **UIの改善:** 一括リネーム機能を、見つけやすくするために「ツール」メニュー配下に専用の「MaterialInstanceRenamer」セクションを設けて移動しました。
+* **互換性:** Unreal Engine 5.6に対応しました。
 
 ## ライセンス
 
