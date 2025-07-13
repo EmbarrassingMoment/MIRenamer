@@ -11,7 +11,7 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
     * An error message will be displayed if the selected asset is not a Material Instance.
     * A confirmation dialog appears if the name does not conform to the expected pattern (excluding patterns like `M_Hoge_Inst`).
 * **Batch Renaming:**
-    * You can rename all Material Instances under the `/Game` folder in your project at once by selecting "Rename All Material Instances" from the "Tools" menu in the editor's top menu bar.
+    * You can rename all Material Instances under the `/Game` folder in your project at once by selecting "Rename All Material Instances" .from the "Tools" > "MaterialInstanceRenamer" section in the editor's top menu bar.
     * A confirmation dialog is displayed before processing.
     * A progress dialog is shown during the operation.
     * After completion, a summary dialog shows the total number of renamed assets.
@@ -42,7 +42,7 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 
 ### Batch Rename
 
-1.  Go to the "Tools" menu in the Unreal Engine editor's top menu bar.
+1.  Go to the "Tools" > "MaterialInstanceRenamer" in the Unreal Engine editor's top menu bar.
 2.  Select "Rename All Material Instances".
 3.  A confirmation dialog will appear. Click "Yes" to proceed.
 4.  All Material Instances within the project will be scanned and renamed according to the naming convention.
@@ -69,7 +69,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
     * リネーム対象のアセットがマテリアルインスタンスでない場合は、エラーメッセージが表示されます。
     * 命名規則に沿っていない場合に確認ダイアログを表示します（`M_Hoge_Inst` のようなパターンを除く）。
 * **一括リネーム:**
-    * エディタ上部のメニューバー「ツール」から「すべてのマテリアルインスタンスの名前を変更」を選択することで、プロジェクト内の `/Game` フォルダ以下にある全てのマテリアルインスタンスを一括でリネームできます。
+    * エディタ上部のメニューバー「ツール」内の「MaterialInstanceRenamer」セクションから「すべてのマテリアルインスタンスの名前を変更」を選択することで、プロジェクト内の `/Game` フォルダ以下にある全てのマテリアルインスタンスを一括でリネームできます。
     * 処理前に確認ダイアログが表示されます。
     * 処理中は進捗ダイアログが表示されます。
     * 処理完了後、リネームしたアセットの総数を表示します。
@@ -100,7 +100,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 ### 一括リネーム
 
-1.  Unreal Engineエディタ上部のメニューバーから「ツール」を開きます。
+1.  Unreal Engineエディタ上部のメニューバーから「ツール」>「MaterialInstanceRenamer」を開きます。
 2.  「すべてのマテリアルインスタンスの名前を変更」を選択します。
 3.  確認ダイアログが表示されるので、「はい」を選択します。
 4.  プロジェクト内のすべてのマテリアルインスタンスがスキャンされ、命名規則に従ってリネーム処理が実行されます。
