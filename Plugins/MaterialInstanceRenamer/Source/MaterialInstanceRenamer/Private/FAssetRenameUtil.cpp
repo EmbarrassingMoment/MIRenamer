@@ -1,51 +1,18 @@
 // Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "FAssetRenameUtil.h"
-#include "MaterialInstanceRenamer.h" // Include module header to access Get() for flags if needed (like IsBatchRename)
+#include "MaterialInstanceRenamer.h" 
 #include "AssetRegistry/AssetRegistryModule.h"
-#include "AssetToolsModule.h" // Required for IAssetTools
-#include "Materials/MaterialInstanceConstant.h" // Required for UMaterialInstanceConstant
-#include "UObject/UObjectGlobals.h" // Required for FindObject / LoadObject
-#include "UObject/Package.h" // Required for UPackage, MarkPackageDirty
-#include "Misc/Paths.h" // Required for FPaths
-#include "Misc/MessageDialog.h" // For FMessageDialog (optional, for error reporting)
-#include "Logging/LogMacros.h" // For UE_LOG
+#include "AssetToolsModule.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "UObject/UObjectGlobals.h"
+#include "UObject/Package.h"
+#include "Misc/Paths.h"
+#include "Misc/MessageDialog.h"
+#include "Logging/LogMacros.h"
+
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule" // Use the same namespace for LOCTEXT
-
-// Placeholder implementation - needs refinement based on actual requirements
-FString FAssetRenameUtil::GenerateUniqueAssetName(const FString& PackagePath, const FString& BaseName, IAssetRegistry& AssetRegistry)
-{
-	FString CandidateName;
-	int32 Counter = 0;
-	bool bFoundUniqueName = false;
-
-	// Simple approach: append _Number until unique
-	while (!bFoundUniqueName)
-	{
-		if (Counter == 0)
-		{
-			CandidateName = BaseName;
-		}
-		else
-		{
-			CandidateName = FString::Printf(TEXT("%s%d"), *BaseName, Counter);
-		}
-
-		FString CandidatePackagePath = PackagePath + TEXT("/") + CandidateName;
-		FAssetData ExistingAsset = AssetRegistry.GetAssetByObjectPath(FSoftObjectPath(CandidatePackagePath));
-
-		if (!ExistingAsset.IsValid())
-		{
-			bFoundUniqueName = true;
-		}
-		else
-		{
-			Counter++;
-		}
-	}
-	return CandidateName;
-}
 
 // Renames the material instance asset based on rules.
 void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
@@ -136,16 +103,13 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
 	IAssetTools& AssetTools = AssetToolsModule.Get();
 
-	TArray<FAssetRenameData> AssetsToRenameData;
-	FString PackagePath = AssetToRename.PackagePath.ToString();
-	FString NewPackagePath = PackagePath; // Assuming rename within the same folder
+	FString CurrentPackagePath = AssetToRename.PackagePath.ToString();
+	FString BaseAssetName = FPaths::Combine(CurrentPackagePath, NewName);
 
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
-	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	FString UniquePackageName;
+	FString UniqueAssetName;
 
-	FString UniqueName = GenerateUniqueAssetName(NewPackagePath, NewName, AssetRegistry);
-	FString NewAssetPath = FPaths::Combine(NewPackagePath, UniqueName);
-
+	AssetTools.CreateUniqueAssetName(BaseAssetName, TEXT(""), UniquePackageName, UniqueAssetName);
 
 	UObject* AssetObject = AssetToRename.GetAsset();
 	if (!AssetObject)
@@ -154,18 +118,18 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 		return false;
 	}
 
-	AssetsToRenameData.Emplace(AssetObject, NewPackagePath, UniqueName);
-
+	TArray<FAssetRenameData> AssetsToRenameData;
+	AssetsToRenameData.Emplace(AssetObject, FPaths::GetPath(UniquePackageName), UniqueAssetName);
 
 	bool bSuccess = AssetTools.RenameAssets(AssetsToRenameData);
 
 	if (bSuccess)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Successfully renamed '%s' to '%s'"), *AssetToRename.AssetName.ToString(), *UniqueName);
+		UE_LOG(LogTemp, Log, TEXT("Successfully renamed '%s' to '%s'"), *AssetToRename.AssetName.ToString(), *UniqueAssetName);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to rename asset '%s' to '%s' using AssetTools."), *AssetToRename.AssetName.ToString(), *UniqueName);
+		UE_LOG(LogTemp, Error, TEXT("Failed to rename asset '%s' to '%s' using AssetTools."), *AssetToRename.AssetName.ToString(), *UniqueAssetName);
 		if (!FMaterialInstanceRenamerModule::Get().IsBatchRename())
 		{
 			FText ErrorTitle = LOCTEXT("RenameFailedTitle", "Rename Failed");

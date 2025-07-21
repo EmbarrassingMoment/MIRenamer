@@ -10,8 +10,6 @@ class IAssetRegistry; // Forward declaration
 class FAssetRenameUtil
 {
 public:
-	// Generates a unique asset name. (Implementation not shown in original, kept declaration)
-	static FString GenerateUniqueAssetName(const FString& PackagePath, const FString& BaseName, IAssetRegistry& AssetRegistry);
 
 	// Renames the material instance asset based on rules.
 	static void RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch = false);

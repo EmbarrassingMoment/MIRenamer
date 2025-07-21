@@ -292,12 +292,7 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 		// Call the utility function to perform the rename check and execution
 		FAssetRenameUtil::RenameMaterialInstance(AssetData, true); // Pass true for bIsBatch
 
-		// Ideally, RenameMaterialInstance should return whether it actually renamed.
-		// For now, we assume it tries and increment count. A better approach would be:
-		// if (FAssetRenameUtil::RenameMaterialInstance(AssetData, true)) { RenamedCount++; }
-		// But that requires modifying FAssetRenameUtil::RenameMaterialInstance to return bool.
-		// We'll simulate based on the old logic's counting:
-		if (!AssetData.AssetName.ToString().StartsWith(TEXT("MI_"))) // Count if it *likely* needed renaming
+		if (!AssetData.AssetName.ToString().StartsWith(TEXT("MI_"))) 
 		{
 			RenamedCount++;
 		}
