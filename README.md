@@ -50,7 +50,7 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 
 ## Changelog
 
-### v1.1.0 (2025-07-13)
+### v1.0.1 (2025-07-13)
 * **UI Improvement:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
 * **Compatibility:** Added support for Unreal Engine 5.6.
 
@@ -112,7 +112,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 ## 変更履歴 (Changelog)
 
-### v1.1.0 (2025-07-13)
+### v1.0.1 (2025-07-13)
 * **UIの改善:** 一括リネーム機能を、見つけやすくするために「ツール」メニュー配下に専用の「MaterialInstanceRenamer」セクションを設けて移動しました。
 * **互換性:** Unreal Engine 5.6に対応しました。
 
