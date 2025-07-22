@@ -14,8 +14,8 @@
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule" // Use the same namespace for LOCTEXT
 
-// Renames the material instance asset based on rules.
-void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
+// Renames the material instance asset based on rules. Returns true if renamed.
+bool FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
 {
 	const FString RecommendedPrefix = TEXT("MI_");
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
@@ -23,21 +23,21 @@ void FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, b
 	// Skip if the asset already has the correct prefix
 	if (ShouldSkipRename(OldAssetName, RecommendedPrefix, bIsBatch))
 	{
-		return;
+		return false; // Not renamed
 	}
 
 	// Extract the base name
 	FString BaseName = ExtractBaseName(OldAssetName, bIsBatch);
 	if (BaseName.IsEmpty())
 	{
-		return; // Skip if the pattern is invalid
+		return false; // Not renamed, pattern was invalid
 	}
 
 	// Construct the new name
 	FString NewAssetName = RecommendedPrefix + BaseName;
 
-	// Perform the asset rename
-	RenameAsset(SelectedAsset, NewAssetName);
+	// Perform the asset rename and return its success status
+	return RenameAsset(SelectedAsset, NewAssetName);
 }
 
 bool FAssetRenameUtil::ShouldSkipRename(const FString& OldAssetName, const FString& RecommendedPrefix, bool bIsBatch)
@@ -139,19 +139,6 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 	}
 
 	return bSuccess;
-}
-
-// Marks the package as dirty if the asset data is valid.
-void FAssetRenameUtil::MarkPackageDirtyIfValid(const FAssetData& NewAssetData)
-{
-	if (NewAssetData.IsValid())
-	{
-		UPackage* Package = FindPackage(nullptr, *NewAssetData.PackageName.ToString());
-		if (Package)
-		{
-			Package->MarkPackageDirty();
-		}
-	}
 }
 
 #undef LOCTEXT_NAMESPACE

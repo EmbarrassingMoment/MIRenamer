@@ -18,6 +18,7 @@
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
+// ... (GetLocalizedText and MenuExtension_MaterialInstance namespaces are unchanged) ...
 //----------------------------------------------------------------------//
 // Localized Text Helper
 //----------------------------------------------------------------------//
@@ -128,6 +129,8 @@ namespace MenuExtension_MaterialInstance
 	}
 } // namespace MenuExtension_MaterialInstance
 
+
+// ... (FMaterialInstanceRenamerModule implementation up to OnRenameAllMaterialInstancesClicked is unchanged) ...
 //----------------------------------------------------------------------//
 // FMaterialInstanceRenamerModule Implementation
 //----------------------------------------------------------------------//
@@ -241,6 +244,7 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 	UE_LOG(LogTemp, Log, TEXT("Added 'Rename All Material Instances' to Tools menu."));
 }
 
+
 /**
  * Handles the click event for the "Rename All Material Instances" menu item.
  */
@@ -290,13 +294,11 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 		SlowTask.EnterProgressFrame(1, FText::Format(GetLocalizedText("RenamingAsset"), FText::FromName(AssetData.AssetName)));
 
 		// Call the utility function to perform the rename check and execution
-		FAssetRenameUtil::RenameMaterialInstance(AssetData, true); // Pass true for bIsBatch
-
-		if (!AssetData.AssetName.ToString().StartsWith(TEXT("MI_"))) 
+		// Increment count only if the asset was actually renamed
+		if (FAssetRenameUtil::RenameMaterialInstance(AssetData, true))
 		{
 			RenamedCount++;
 		}
-
 
 		if (SlowTask.ShouldCancel()) // Check for user cancellation
 		{
@@ -307,7 +309,7 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
 	// Display final result message
 	FText RenameCompleteMessage = GetLocalizedText("RenameCompleteWithCount", RenamedCount);
 	FMessageDialog::Open(EAppMsgType::Ok, RenameCompleteMessage);
-	UE_LOG(LogTemp, Log, TEXT("Batch rename process finished. Attempted to rename %d assets."), RenamedCount);
+	UE_LOG(LogTemp, Log, TEXT("Batch rename process finished. Renamed %d assets."), RenamedCount);
 
 
 	SetBatchRename(false); // Reset batch flag
