@@ -51,8 +51,12 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 ## Changelog
 
 ### v1.0.1 (2025-07-13)
-* **UI Improvement:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
-* **Compatibility:** Added support for Unreal Engine 5.6.
+* **UI Improvement:**  Replaced the custom unique name generation logic with the standard IAssetTools::CreateUniqueAssetName engine function for better stability and maintainability.
+* **Code Cleanup:** Added support for Unreal Engine 5.6.
+
+### v1.0.2 (2025-07-23)
+* **Refactor:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
+* **Compatibility:** Performed other minor refactorings to improve overall code quality.
 
 ## License
 
@@ -115,6 +119,10 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 ### v1.0.1 (2025-07-13)
 * **UIの改善:** 一括リネーム機能を、見つけやすくするために「ツール」メニュー配下に専用の「MaterialInstanceRenamer」セクションを設けて移動しました。
 * **互換性:** Unreal Engine 5.6に対応しました。
+
+### v1.0.2 (2025-07-23)
+* **リファクタリング:** アセットのユニーク名を生成するロジックを、独自実装からエンジン標準のIAssetTools::CreateUniqueAssetName関数に置き換えました。これにより、処理の安定性とメンテナンス性が向上しました。
+* **コード整理:** その他、全体的なコード品質を向上させるための軽微なリファクタリングを実施しました。
 
 ## ライセンス
 
