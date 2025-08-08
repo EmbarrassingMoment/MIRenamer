@@ -48,6 +48,17 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 4.  All Material Instances within the project will be scanned and renamed according to the naming convention.
 5.  A dialog box indicating the results will be displayed upon completion.
 
+## Case Study
+
+In a project containing Material Instance assets named `M_Sample_Inst` and `Hoge`, running the batch rename feature converted them to `MI_Sample` and `MI_Hoge`.
+
+**Before → After**
+
+- `M_Sample_Inst` → `MI_Sample`
+- `Hoge` → `MI_Hoge`
+
+Automatically applying the naming convention cleaned up the asset list and saved time by removing repetitive manual renaming.
+
 ## Changelog
 
 ### v1.0.1 (2025-07-13)
@@ -113,6 +124,17 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 3.  確認ダイアログが表示されるので、「はい」を選択します。
 4.  プロジェクト内のすべてのマテリアルインスタンスがスキャンされ、命名規則に従ってリネーム処理が実行されます。
 5.  処理完了後、結果を示すダイアログが表示されます。
+
+## ケーススタディ
+
+サンプルプロジェクトでは、`M_Sample_Inst` と `Hoge` というマテリアルインスタンスが存在していました。一括リネーム機能を実行すると、それぞれ `MI_Sample` と `MI_Hoge` に変換されました。
+
+**Before → After**
+
+- `M_Sample_Inst` → `MI_Sample`
+- `Hoge` → `MI_Hoge`
+
+命名規則に沿った名前へ自動的に変換されることで、アセット一覧が整理され、繰り返しの手動リネーム作業を省けるため作業効率が向上します。
 
 ## 変更履歴 (Changelog)
 
