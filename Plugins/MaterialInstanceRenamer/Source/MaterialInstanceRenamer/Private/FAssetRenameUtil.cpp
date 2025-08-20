@@ -14,27 +14,42 @@
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule" // Use the same namespace for LOCTEXT
 
-// Renames the material instance asset based on rules. Returns true if renamed.
-bool FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
+const FString FAssetRenameUtil::RecommendedPrefix = TEXT("MI_");
+
+// Generates a new asset name based on renaming rules.
+FString FAssetRenameUtil::GenerateNewAssetName(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
 {
-	const FString RecommendedPrefix = TEXT("MI_");
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
 	// Skip if the asset already has the correct prefix
 	if (ShouldSkipRename(OldAssetName, RecommendedPrefix, bIsBatch))
 	{
-		return false; // Not renamed
+		return FString(); // Return empty to indicate skip
 	}
 
 	// Extract the base name
 	FString BaseName = ExtractBaseName(OldAssetName, bIsBatch);
 	if (BaseName.IsEmpty())
 	{
-		return false; // Not renamed, pattern was invalid
+		return FString(); // Return empty, pattern was invalid
 	}
 
-	// Construct the new name
-	FString NewAssetName = RecommendedPrefix + BaseName;
+	// Construct and return the new name
+	return RecommendedPrefix + BaseName;
+}
+
+
+// Renames the material instance asset based on rules. Returns true if renamed.
+bool FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
+{
+	// Generate the new name first
+	FString NewAssetName = GenerateNewAssetName(SelectedAsset, bIsBatch);
+
+	// If the new name is empty, it means we should skip this asset
+	if (NewAssetName.IsEmpty())
+	{
+		return false; // Not renamed
+	}
 
 	// Perform the asset rename and return its success status
 	return RenameAsset(SelectedAsset, NewAssetName);

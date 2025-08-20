@@ -17,6 +17,9 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+	// Retrieves localized text based on the current culture.
+	static FText GetLocalizedText(const FString& Key, int32 Count = -1);
+
 	bool IsBatchRename() const { return bIsBatchRename; }
 	void SetBatchRename(bool bInBatchRename) { bIsBatchRename = bInBatchRename; }
 
