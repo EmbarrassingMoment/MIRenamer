@@ -21,6 +21,7 @@ public:
 	void SetBatchRename(bool bInBatchRename) { bIsBatchRename = bInBatchRename; }
 
 private:
+	void OnAssetCreated(UObject* NewAsset);
 	void OnRenameAllMaterialInstancesClicked();
 	void AddToolMenuEntry();
 	void AddMaterialContextMenuEntry(); 

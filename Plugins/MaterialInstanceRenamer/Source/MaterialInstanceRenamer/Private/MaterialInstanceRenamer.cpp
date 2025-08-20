@@ -1,9 +1,12 @@
 ﻿// Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "MaterialInstanceRenamer.h"
-#include "FAssetRenameUtil.h" 
+#include "FAssetRenameUtil.h"
+#include "ISettingsModule.h"
+#include "MaterialInstanceRenamerSettings.h"
 #include "Modules/ModuleManager.h"
 #include "ToolMenus.h"
+#include "AssetManager.h"
 #include "ContentBrowserModule.h" // For ExtendToolMenu_AssetContextMenu
 #include "ContentBrowserMenuContexts.h" // For UContentBrowserAssetContextMenuContext
 #include "Materials/MaterialInterface.h" // For UMaterialInterface::StaticClass()
@@ -61,6 +64,33 @@ FText GetLocalizedText(const FString& Key, int32 Count = -1)
 		if (Key == "NotAMaterialInstance") return LOCTEXT("NotAMaterialInstance_EN", "The selected asset is not a Material Instance.");
 	}
 	return FText::Format(LOCTEXT("LocalizationNotFound", "Localization key '{0}' not found"), FText::FromString(Key));
+}
+
+/**
+ * Handles the asset creation event to automatically rename Material Instances.
+ * @param NewAsset The newly created asset.
+ */
+void FMaterialInstanceRenamerModule::OnAssetCreated(UObject* NewAsset)
+{
+	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
+	if (!Settings || !Settings->bAutoRenameOnCreate)
+	{
+		return;
+	}
+
+	if (UMaterialInstanceConstant* MaterialInstance = Cast<UMaterialInstanceConstant>(NewAsset))
+	{
+		// To get the FAssetData, we can use the Asset Registry
+		FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
+		FAssetData AssetData(MaterialInstance);
+
+		if (AssetData.IsValid())
+		{
+			UE_LOG(LogTemp, Log, TEXT("Auto-renaming newly created material instance: %s"), *AssetData.AssetName.ToString());
+			// Call utility function (not batch)
+			FAssetRenameUtil::RenameMaterialInstance(AssetData, false);
+		}
+	}
 }
 
 
@@ -140,13 +170,40 @@ void FMaterialInstanceRenamerModule::StartupModule()
 	UE_LOG(LogTemp, Log, TEXT("MaterialInstanceRenamer Module Started"));
 	if (IsRunningCommandlet()) return; // Don't register UI stuff in commandlets
 
+	// Register settings
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->RegisterSettings("Project", "Plugins", "MaterialInstanceRenamer",
+			LOCTEXT("MaterialInstanceRenamerSettingsName", "Material Instance Renamer"),
+			LOCTEXT("MaterialInstanceRenamerSettingsDescription", "Configure the Material Instance Renamer plugin."),
+			GetMutableDefault<UMaterialInstanceRenamerSettings>()
+		);
+	}
+
 	AddMaterialContextMenuEntry();
 	AddToolMenuEntry();
+
+	// Bind to asset creation
+	if (UAssetManager::IsInitialized())
+	{
+		UAssetManager::Get().OnAssetCreated().AddRaw(this, &FMaterialInstanceRenamerModule::OnAssetCreated);
+	}
 }
 
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
 	UE_LOG(LogTemp, Log, TEXT("MaterialInstanceRenamer Module Shutdown"));
+	// Unregister settings
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->UnregisterSettings("Project", "Plugins", "MaterialInstanceRenamer");
+	}
+
+	// Unbind from asset creation
+	if (UAssetManager::IsInitialized())
+	{
+		UAssetManager::Get().OnAssetCreated().RemoveAll(this);
+	}
 	// Unregister menus automatically via FToolMenuOwnerScoped in Add... functions
 }
 
