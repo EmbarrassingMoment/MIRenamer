@@ -16,9 +16,14 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
     * A progress dialog is shown during the operation.
     * After completion, a summary dialog shows the total number of renamed assets.
 * **Naming Convention:**
-    * Primarily changes names from the `M_AssetName_Inst` format to `MI_AssetName`.
-    * Assets already prefixed with `MI_` are skipped (during batch processing).
-    * Assets without a prefix (e.g., `Hoge`) are changed to `MI_Hoge` (with confirmation).
+    * The plugin renames assets to use the `MI_` prefix (e.g., `MI_AssetName`).
+    * It handles several common naming patterns to extract a clean base name:
+        * `M_AssetName_Inst` → `MI_AssetName`
+        * `AssetName_Inst` → `MI_AssetName`
+        * `MI_M_AssetName_Inst` → `MI_AssetName`
+        * `MI_M_AssetName` → `MI_AssetName`
+    * Assets already correctly prefixed with `MI_` are skipped.
+    * Assets that do not match one of the recognized patterns are also skipped to prevent incorrect renames.
 * **Automatic Handling of Duplicate Names:**
     * If the new name already exists after renaming, a numerical suffix (e.g., `MI_Hoge1`, `MI_Hoge2`) is automatically appended to prevent naming conflicts.
 * **Localization:**
@@ -50,24 +55,24 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 
 ## Case Study
 
-In a project containing Material Instance assets named `M_Sample_Inst` and `Hoge`, running the batch rename feature converted them to `MI_Sample` and `MI_Hoge`.
+In a project containing Material Instance assets named `M_Player_Inst` and `Weapon_Inst`, running the batch rename feature converted them to `MI_Player` and `MI_Weapon`.
 
 **Before → After**
 
-- `M_Sample_Inst` → `MI_Sample`
-- `Hoge` → `MI_Hoge`
+- `M_Player_Inst` → `MI_Player`
+- `Weapon_Inst` → `MI_Weapon`
 
 Automatically applying the naming convention cleaned up the asset list and saved time by removing repetitive manual renaming.
 
 ## Changelog
 
 ### v1.0.1 (2025-07-13)
-* **UI Improvement:**  Replaced the custom unique name generation logic with the standard IAssetTools::CreateUniqueAssetName engine function for better stability and maintainability.
-* **Code Cleanup:** Added support for Unreal Engine 5.6.
+* **UI Improvement:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
+* **Compatibility:** Added support for Unreal Engine 5.6.
 
 ### v1.0.2 (2025-07-23)
-* **Refactor:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
-* **Compatibility:** Performed other minor refactorings to improve overall code quality.
+* **Refactor:** Replaced the custom unique name generation logic with the standard `IAssetTools::CreateUniqueAssetName` engine function for better stability and maintainability.
+* **Code Cleanup:** Performed other minor refactorings to improve overall code quality.
 
 ## License
 
@@ -93,9 +98,14 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
     * 処理中は進捗ダイアログが表示されます。
     * 処理完了後、リネームしたアセットの総数を表示します。
 * **命名規則:**
-    * 主に `M_アセット名_Inst` という形式の名前を `MI_アセット名` に変更します。
-    * 既に `MI_` プレフィックスが付いている場合はスキップされます（一括処理時）。
-    * プレフィックスが付いていないアセット (`Hoge` など) は `MI_Hoge` に変更します（確認あり）。
+    * アセット名を`MI_`プレフィックスを使用するようにリネームします (例: `MI_アセット名`)。
+    * 以下の一般的な命名パターンを処理し、クリーンなベース名を抽出します:
+        * `M_アセット名_Inst` → `MI_アセット名`
+        * `アセット名_Inst` → `MI_アセット名`
+        * `MI_M_アセット名_Inst` → `MI_アセット名`
+        * `MI_M_アセット名` → `MI_アセット名`
+    * 既に`MI_`プレフィックスが正しく付いているアセットはスキップされます。
+    * 認識されたパターンのいずれにも一致しないアセットも、不正なリネームを防ぐためにスキップされます。
 * **重複名の自動処理:**
     * リネーム後の名前が既に存在する場合、自動的に連番（例: `MI_Hoge1`, `MI_Hoge2`）を付与して名前の重複を防ぎます。
 * **多言語対応:**
@@ -127,12 +137,12 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 ## ケーススタディ
 
-サンプルプロジェクトでは、`M_Sample_Inst` と `Hoge` というマテリアルインスタンスが存在していました。一括リネーム機能を実行すると、それぞれ `MI_Sample` と `MI_Hoge` に変換されました。
+サンプルプロジェクトでは、`M_Player_Inst` と `Weapon_Inst` というマテリアルインスタンスが存在していました。一括リネーム機能を実行すると、それぞれ `MI_Player` と `MI_Weapon` に変換されました。
 
 **Before → After**
 
-- `M_Sample_Inst` → `MI_Sample`
-- `Hoge` → `MI_Hoge`
+- `M_Player_Inst` → `MI_Player`
+- `Weapon_Inst` → `MI_Weapon`
 
 命名規則に沿った名前へ自動的に変換されることで、アセット一覧が整理され、繰り返しの手動リネーム作業を省けるため作業効率が向上します。
 
