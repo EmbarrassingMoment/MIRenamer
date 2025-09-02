@@ -1,103 +1,86 @@
 // Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "FAssetRenameUtil.h"
-#include "MaterialInstanceRenamer.h" 
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetToolsModule.h"
-#include "Materials/MaterialInstanceConstant.h"
+#include "IAssetTools.h"
 #include "UObject/UObjectGlobals.h"
 #include "UObject/Package.h"
 #include "Misc/Paths.h"
-#include "Misc/MessageDialog.h"
 #include "Logging/LogMacros.h"
+#include "UObject/Object.h"
+#include "AssetRenameManager.h"
 
+// Define a structure to hold renaming patterns
+struct FRenamePattern
+{
+	FString Prefix;
+	FString Suffix;
+	int32 PrefixLen;
+	int32 SuffixLen;
 
-#define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule" // Use the same namespace for LOCTEXT
+	FRenamePattern(const FString& InPrefix, const FString& InSuffix)
+		: Prefix(InPrefix), Suffix(InSuffix), PrefixLen(InPrefix.Len()), SuffixLen(InSuffix.Len())
+	{}
+};
 
-// Renames the material instance asset based on rules. Returns true if renamed.
-bool FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, bool bIsBatch /*= false*/)
+// Rule-based approach for extracting the base name
+bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& OutBaseName)
+{
+	TArray<FRenamePattern> Patterns;
+	Patterns.Emplace(TEXT("MI_M_"), TEXT("_Inst"));
+	Patterns.Emplace(TEXT("MI_M_"), TEXT(""));
+	Patterns.Emplace(TEXT("M_"), TEXT("_Inst"));
+	Patterns.Emplace(TEXT(""), TEXT("_Inst"));
+
+	for (const FRenamePattern& Pattern : Patterns)
+	{
+		bool bPrefixMatches = Pattern.Prefix.IsEmpty() || OldAssetName.StartsWith(Pattern.Prefix);
+		bool bSuffixMatches = Pattern.Suffix.IsEmpty() || OldAssetName.EndsWith(Pattern.Suffix);
+
+		if (bPrefixMatches && bSuffixMatches)
+		{
+			int32 End = OldAssetName.Len() - Pattern.SuffixLen;
+			OutBaseName = OldAssetName.Mid(Pattern.PrefixLen, End - Pattern.PrefixLen);
+			return true;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Asset '%s' does not match any expected naming pattern."), *OldAssetName);
+	return false; // No pattern matched
+}
+
+// Main function to orchestrate the renaming process
+ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset)
 {
 	const FString RecommendedPrefix = TEXT("MI_");
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
-	// Skip if the asset already has the correct prefix
-	if (ShouldSkipRename(OldAssetName, RecommendedPrefix, bIsBatch))
-	{
-		return false; // Not renamed
-	}
-
-	// Extract the base name
-	FString BaseName = ExtractBaseName(OldAssetName, bIsBatch);
-	if (BaseName.IsEmpty())
-	{
-		return false; // Not renamed, pattern was invalid
-	}
-
-	// Construct the new name
-	FString NewAssetName = RecommendedPrefix + BaseName;
-
-	// Perform the asset rename and return its success status
-	return RenameAsset(SelectedAsset, NewAssetName);
-}
-
-bool FAssetRenameUtil::ShouldSkipRename(const FString& OldAssetName, const FString& RecommendedPrefix, bool bIsBatch)
-{
+	// 1. Check if the asset should be skipped
 	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(TEXT("MI_M_")))
 	{
-		if (!bIsBatch)
-		{
-			FText MessageTitle = LOCTEXT("RenameSkippedTitle", "Rename Skipped");
-			FText MessageContent = FText::Format(
-				LOCTEXT("RenameSkippedAlreadyPrefixed", "Asset '{0}' is already prefixed with '{1}' and was excluded from renaming."),
-				FText::FromString(OldAssetName),
-				FText::FromString(RecommendedPrefix)
-			);
-			FMessageDialog::Open(EAppMsgType::Ok, MessageContent, &MessageTitle);
-		}
-		return true;
+		UE_LOG(LogTemp, Log, TEXT("Skipped rename for '%s' as it already has the recommended prefix."), *OldAssetName);
+		return ERenameResult::Skipped;
 	}
-	return false;
-}
 
-FString FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, bool bIsBatch)
-{
+	// 2. Extract the base name using the rule-based method
 	FString BaseName;
-
-	if (OldAssetName.StartsWith(TEXT("MI_M_")) && OldAssetName.EndsWith(TEXT("_Inst")))
+	if (!ExtractBaseName(OldAssetName, BaseName))
 	{
-		BaseName = OldAssetName.Mid(5, OldAssetName.Len() - 10); // Remove "MI_M_" and "_Inst"
-	}
-	else if (OldAssetName.StartsWith(TEXT("MI_M_")))
-	{
-		BaseName = OldAssetName.Mid(5); // Remove "MI_M_"
-	}
-	else if (OldAssetName.StartsWith(TEXT("M_")) && OldAssetName.EndsWith(TEXT("_Inst")))
-	{
-		BaseName = OldAssetName.Mid(2, OldAssetName.Len() - 7); // Remove "M_" and "_Inst"
-	}
-	else if (OldAssetName.EndsWith(TEXT("_Inst")))
-	{
-		BaseName = OldAssetName.Left(OldAssetName.Len() - 5); // Remove "_Inst"
-	}
-	else
-	{
-		if (!bIsBatch)
-		{
-			FText MessageTitle = LOCTEXT("RenameSkippedTitle", "Rename Skipped");
-			FText MessageContent = FText::Format(
-				LOCTEXT("RenameSkippedInvalidPattern", "Asset '{0}' does not match the expected naming pattern and was excluded from renaming."),
-				FText::FromString(OldAssetName)
-			);
-			FMessageDialog::Open(EAppMsgType::Ok, MessageContent, &MessageTitle);
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Asset '%s' does not match the expected naming pattern."), *OldAssetName);
-		return FString(); // Return empty string to indicate invalid
+		return ERenameResult::InvalidPattern;
 	}
 
-	return BaseName;
+	// 3. Construct the new name and perform the rename
+	FString NewAssetName = RecommendedPrefix + BaseName;
+	if (RenameAsset(SelectedAsset, NewAssetName))
+	{
+		return ERenameResult::Renamed;
+	}
+
+	return ERenameResult::Failed;
 }
 
-// Renames the specified asset to the new name. Returns true on success.
+// Performs the actual asset rename using the AssetTools module.
 bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FString& NewName)
 {
 	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
@@ -108,7 +91,6 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 
 	FString UniquePackageName;
 	FString UniqueAssetName;
-
 	AssetTools.CreateUniqueAssetName(BaseAssetName, TEXT(""), UniquePackageName, UniqueAssetName);
 
 	UObject* AssetObject = AssetToRename.GetAsset();
@@ -121,24 +103,12 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 	TArray<FAssetRenameData> AssetsToRenameData;
 	AssetsToRenameData.Emplace(AssetObject, FPaths::GetPath(UniquePackageName), UniqueAssetName);
 
-	bool bSuccess = AssetTools.RenameAssets(AssetsToRenameData);
-
-	if (bSuccess)
+	if (AssetTools.RenameAssets(AssetsToRenameData))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Successfully renamed '%s' to '%s'"), *AssetToRename.AssetName.ToString(), *UniqueAssetName);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to rename asset '%s' to '%s' using AssetTools."), *AssetToRename.AssetName.ToString(), *UniqueAssetName);
-		if (!FMaterialInstanceRenamerModule::Get().IsBatchRename())
-		{
-			FText ErrorTitle = LOCTEXT("RenameFailedTitle", "Rename Failed");
-			FText ErrorMsg = FText::Format(LOCTEXT("RenameFailedGeneric", "An error occurred while renaming '{0}'."), FText::FromName(AssetToRename.AssetName));
-			FMessageDialog::Open(EAppMsgType::Ok, ErrorMsg, &ErrorTitle);
-		}
+		return true;
 	}
 
-	return bSuccess;
+	UE_LOG(LogTemp, Error, TEXT("Failed to rename asset '%s' to '%s' using AssetTools."), *AssetToRename.AssetName.ToString(), *UniqueAssetName);
+	return false;
 }
-
-#undef LOCTEXT_NAMESPACE
