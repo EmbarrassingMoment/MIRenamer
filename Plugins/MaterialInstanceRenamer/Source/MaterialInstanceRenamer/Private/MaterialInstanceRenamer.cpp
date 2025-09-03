@@ -15,6 +15,7 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Misc/ScopedSlowTask.h"
 #include "Styling/AppStyle.h"
+#include "Algo/AnyOf.h" 
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
@@ -124,15 +125,18 @@ namespace MenuExtension_MaterialInstance
             }
         }
 
-        FText DialogTitle = FLocalizationManager::GetText("RenameComplete");
-        FText DialogMessage = FText::Format(
-            FLocalizationManager::GetText("RenameSummary"),
-            FText::AsNumber(RenamedCount),
-            FText::AsNumber(SkippedCount),
-            FText::AsNumber(FailedCount),
-            FText::AsNumber(InvalidPatternCount)
-        );
-        FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+        if (MaterialInstances.Num() > 1)
+        {
+            FText DialogTitle = FLocalizationManager::GetText("RenameComplete");
+            FText DialogMessage = FText::Format(
+                FLocalizationManager::GetText("RenameSummary"),
+                FText::AsNumber(RenamedCount),
+                FText::AsNumber(SkippedCount),
+                FText::AsNumber(FailedCount),
+                FText::AsNumber(InvalidPatternCount)
+            );
+            FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+        }
     }
 }
 
