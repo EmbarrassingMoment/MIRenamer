@@ -7,9 +7,9 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 ## Features
 
 * **Context Menu Renaming:**
-    * You can rename individual Material Instance assets by right-clicking them in the Content Browser and selecting "Rename to Recommended Prefix".
-    * An error message will be displayed if the selected asset is not a Material Instance.
-    * A confirmation dialog appears if the name does not conform to the expected pattern (excluding patterns like `M_Hoge_Inst`).
+    * You can rename one or more Material Instance assets by right-clicking them in the Content Browser and selecting "Rename to Recommended Prefix".
+    * An error message will be displayed if none of the selected assets are Material Instances.
+    * If multiple assets are processed, a summary dialog is shown with a detailed breakdown of the results.
 * **Batch Renaming:**
     * You can rename all Material Instances under the `/Game` folder in your project at once by selecting "Rename All Material Instances" .from the "Tools" > "MaterialInstanceRenamer" section in the editor's top menu bar.
     * A confirmation dialog is displayed before processing.
@@ -38,12 +38,11 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 2.  Launch (or restart) the Unreal Engine editor.
 3.  The plugin should be automatically enabled. (If necessary, verify it's enabled by searching for `MaterialInstanceRenamer` under "Edit" > "Plugins" in the menu.)
 
-### Individual Rename
+### Context Menu Rename
 
-1.  In the Content Browser, select the Material Instance asset you want to rename.
-2.  Right-click the asset and choose "Rename to Recommended Prefix" from the context menu.
-3.  If prompted, click "Yes" in the confirmation dialog.
-4.  The asset name will be changed to include the `MI_` prefix.
+1.  In the Content Browser, select one or more Material Instance assets you want to rename.
+2.  Right-click the selected asset(s) and choose "Rename to Recommended Prefix" from the context menu.
+3.  The asset name(s) will be changed to include the `MI_` prefix. If multiple assets were processed, a summary dialog will be shown.
 
 ### Batch Rename
 
@@ -106,9 +105,9 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 ## 機能
 
 * **コンテキストメニューからのリネーム:**
-    * コンテンツブラウザでマテリアルインスタンスアセットを右クリックし、「推奨プレフィックスに名前を変更」を選択することで、個別にリネームできます。
-    * リネーム対象のアセットがマテリアルインスタンスでない場合は、エラーメッセージが表示されます。
-    * 命名規則に沿っていない場合に確認ダイアログを表示します（`M_Hoge_Inst` のようなパターンを除く）。
+    * コンテンツブラウザで1つまたは複数のマテリアルインスタンスアセットを右クリックし、「推奨プレフィックスに名前を変更」を選択することで、リネームできます。
+    * 選択されたアセットにマテリアルインスタンスが含まれていない場合は、エラーメッセージが表示されます。
+    * 複数のアセットを処理した場合、結果の内訳を示す概要ダイアログが表示されます。
 * **一括リネーム:**
     * エディタ上部のメニューバー「ツール」内の「MaterialInstanceRenamer」セクションから「すべてのマテリアルインスタンスの名前を変更」を選択することで、プロジェクト内の `/Game` フォルダ以下にある全てのマテリアルインスタンスを一括でリネームできます。
     * 処理前に確認ダイアログが表示されます。
@@ -137,12 +136,11 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 2.  Unreal Engineエディタを起動（または再起動）します。
 3.  プラグインが自動的に有効化されます。（必要であれば、メニューの「編集」>「プラグイン」から`MaterialInstanceRenamer`を検索し、有効になっているか確認してください。）
 
-### 個別リネーム
+### コンテキストメニューからのリネーム
 
-1.  コンテンツブラウザで、名前を変更したいマテリアルインスタンスアセットを選択します。
-2.  アセットを右クリックし、表示されるコンテキストメニューから「推奨プレフィックスに名前を変更」を選択します。
-3.  必要に応じて表示される確認ダイアログで「はい」を選択します。
-4.  アセット名が `MI_` プレフィックス付きの名前に変更されます。
+1.  コンテンツブラウザで、名前を変更したい1つまたは複数のマテリアルインスタンスアセットを選択します。
+2.  選択したアセットを右クリックし、表示されるコンテキストメニューから「推奨プレフィックスに名前を変更」を選択します。
+3.  アセット名が `MI_` プレフィックス付きの名前に変更されます。複数のアセットを処理した場合は、概要ダイアログが表示されます。
 
 ### 一括リネーム
 
