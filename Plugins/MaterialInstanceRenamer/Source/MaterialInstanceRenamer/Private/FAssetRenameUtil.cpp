@@ -9,7 +9,7 @@
 #include "Misc/Paths.h"
 #include "Logging/LogMacros.h"
 #include "UObject/Object.h"
-#include "AssetRenameManager.h"
+
 
 // Define a structure to hold renaming patterns
 struct FRenamePattern

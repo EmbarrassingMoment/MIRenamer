@@ -15,6 +15,7 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Misc/ScopedSlowTask.h"
 #include "Styling/AppStyle.h"
+#include "Algo/AnyOf.h" 
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
