@@ -13,3 +13,7 @@ Saved
 *.xcodeproj
 *.xcworkspace
 Plugins/VisualStudioTools/
+
+# Node
+/node_modules
+/package-lock.json

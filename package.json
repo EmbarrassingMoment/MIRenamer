@@ -1,0 +1,27 @@
+{
+  "name": "app",
+  "version": "1.0.2",
+  "description": "This Unreal Engine plugin provides functionality to easily rename Material Instance assets within the Content Browser according to Unreal Engine's recommended naming conventions. It supports both individual renaming and batch renaming of all Material Instances within the project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EmbarrassingMoment/MIRenamer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/EmbarrassingMoment/MIRenamer/issues"
+  },
+  "homepage": "https://github.com/EmbarrassingMoment/MIRenamer#readme",
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.5",
+    "semantic-release": "^24.2.7"
+  }
+}
