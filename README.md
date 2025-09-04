@@ -57,17 +57,6 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 *   **Engine Versions:** 5.4, 5.5
 *   **Platforms:** Windows (Win64)
 
-## Case Study
-
-In a project containing Material Instance assets named `M_Player_Inst` and `Weapon_Inst`, running the batch rename feature converted them to `MI_Player` and `MI_Weapon`.
-
-**Before → After**
-
-- `M_Player_Inst` → `MI_Player`
-- `Weapon_Inst` → `MI_Weapon`
-
-Automatically applying the naming convention cleaned up the asset list and saved time by removing repetitive manual renaming.
-
 ## Changelog
 
 ### v1.0.1 (2025-07-13)
@@ -82,7 +71,7 @@ Automatically applying the naming convention cleaned up the asset list and saved
 
 You can find this plugin on the Unreal Engine Marketplace:
 
-*   [View on Marketplace](com.epicgames.launcher://ue/Fab/product/ce379458-e348-4272-9262-8691173fc989)
+*   [View on Marketplace](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
 
 ## Author
 
@@ -155,17 +144,6 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 *   **エンジンバージョン:** 5.4, 5.5
 *   **プラットフォーム:** Windows (Win64)
 
-## ケーススタディ
-
-サンプルプロジェクトでは、`M_Player_Inst` と `Weapon_Inst` というマテリアルインスタンスが存在していました。一括リネーム機能を実行すると、それぞれ `MI_Player` と `MI_Weapon` に変換されました。
-
-**Before → After**
-
-- `M_Player_Inst` → `MI_Player`
-- `Weapon_Inst` → `MI_Weapon`
-
-命名規則に沿った名前へ自動的に変換されることで、アセット一覧が整理され、繰り返しの手動リネーム作業を省けるため作業効率が向上します。
-
 ## 変更履歴 (Changelog)
 
 ### v1.0.1 (2025-07-13)
@@ -180,7 +158,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 このプラグインはUnreal Engine マーケットプレイスで公開されています:
 
-*   [マーケットプレイスで表示](com.epicgames.launcher://ue/Fab/product/ce379458-e348-4272-9262-8691173fc989)
+*   [マーケットプレイスで表示](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
 
 ## 作者
 
