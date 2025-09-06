@@ -16,14 +16,14 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
     * A progress dialog is shown during the operation.
     * After completion, a summary dialog shows a detailed breakdown of the results (Renamed, Skipped, Failed, Invalid Pattern).
 * **Naming Convention:**
-    * The plugin renames assets to use the `MI_` prefix (e.g., `MI_AssetName`).
-    * It extracts a clean base name by matching the following patterns in order:
-        * `MI_M_AssetName_Inst` → `MI_AssetName`
-        * `MI_M_AssetName` → `MI_AssetName`
-        * `M_AssetName_Inst` → `MI_AssetName`
-        * `AssetName_Inst` → `MI_AssetName`
-    * Assets that already start with `MI_` are skipped (unless they match a more specific pattern like `MI_M_...`).
-    * Assets that do not match any of the recognized patterns are left unchanged and are counted under "Invalid Pattern" in the summary report.
+    * The plugin renames assets to the `MI_` prefix (e.g., `MI_AssetName`).
+    * It uses a rule-based system to extract a "base name" from the original asset name. The first matching rule in the following list is used:
+        1.  If the name matches `MI_M_..._Inst`, the text between the prefix and suffix is used as the base name. (e.g., `MI_M_Foo_Inst` -> `Foo`)
+        2.  If the name matches `MI_M_...`, the text after the prefix is used. (e.g., `MI_M_Bar` -> `Bar`)
+        3.  If the name matches `M_..._Inst`, the text between the prefix and suffix is used. (e.g., `M_Baz_Inst` -> `Baz`)
+        4.  If the name ends with `_Inst`, the text before the suffix is used. (e.g., `Qux_Inst` -> `Qux`)
+    * Assets that already start with `MI_` are skipped, unless they also match a more specific rule (like `MI_M_...`).
+    * If an asset name does not match any of the rules, it is left unchanged and counted under "Invalid Pattern" in the summary report.
 * **Automatic Handling of Duplicate Names:**
     * If the new name already exists after renaming, a numerical suffix (e.g., `MI_Hoge1`, `MI_Hoge2`) is automatically appended to prevent naming conflicts.
 * **Localization:**
@@ -54,18 +54,22 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 
 ## Compatibility
 
-*   **Engine Versions:** 5.4, 5.5
+*   **Engine Versions:** 5.4, 5.5, 5.6
 *   **Platforms:** Windows (Win64)
 
 ## Changelog
 
-### v1.0.1 (2025-07-13)
-* **UI Improvement:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
-* **Compatibility:** Added support for Unreal Engine 5.5.
+### v1.0.3 (2025-08-15)
+* **Refactor:** The core renaming logic has been completely refactored into a rule-based system. This makes the pattern matching for extracting base names more robust, maintainable, and predictable.
+* **Compatibility:** Added support for Unreal Engine 5.6.
 
 ### v1.0.2 (2025-07-23)
 * **Refactor:** Replaced the custom unique name generation logic with the standard `IAssetTools::CreateUniqueAssetName` engine function for better stability and maintainability.
 * **Code Cleanup:** Performed other minor refactorings to improve overall code quality.
+
+### v1.0.1 (2025-07-13)
+* **UI Improvement:** Moved the batch rename action into its own "MaterialInstanceRenamer" section under the "Tools" menu for better organization.
+* **Compatibility:** Added support for Unreal Engine 5.5.
 
 ## Marketplace
 
@@ -104,13 +108,13 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
     * 処理完了後、結果（リネーム、スキップ、失敗、不正なパターン）の内訳を示す概要ダイアログが表示されます。
 * **命名規則:**
     * アセット名を`MI_`プレフィックスを使用するようにリネームします (例: `MI_アセット名`)。
-    * 以下のパターンを順番に照合し、クリーンなベース名を抽出します:
-        * `MI_M_アセット名_Inst` → `MI_アセット名`
-        * `MI_M_アセット名` → `MI_アセット名`
-        * `M_アセット名_Inst` → `MI_アセット名`
-        * `アセット名_Inst` → `MI_アセット名`
-    * 既に`MI_`で始まるアセットはスキップされます（ただし、`MI_M_...`のような、より具体的なパターンに一致する場合を除く）。
-    * いずれのパターンにも一致しないアセットは変更されず、概要レポートで「不正なパターン」としてカウントされます。
+    * ルールベースのシステムを使用して、元のアセット名から「ベース名」を抽出します。以下のリストで最初に一致したルールが使用されます。
+        1.  名前が `MI_M_..._Inst` に一致する場合、プレフィックスとサフィックスの間のテキストがベース名として使用されます。(例: `MI_M_Foo_Inst` -> `Foo`)
+        2.  名前が `MI_M_...` に一致する場合、プレフィックスの後のテキストが使用されます。(例: `MI_M_Bar` -> `Bar`)
+        3.  名前が `M_..._Inst` に一致する場合、プレフィックスとサフィックスの間のテキストがベース名として使用されます。(例: `M_Baz_Inst` -> `Baz`)
+        4.  名前が `_Inst` で終わる場合、サフィックスの前のテキストが使用されます。(例: `Qux_Inst` -> `Qux`)
+    * 既に`MI_`で始まるアセットはスキップされます（ただし、`MI_M_...`のような、より具体的なルールに一致する場合を除く）。
+    * いずれのルールにも一致しないアセット名は変更されず、概要レポートで「不正なパターン」としてカウントされます。
 * **重複名の自動処理:**
     * リネーム後の名前が既に存在する場合、自動的に連番（例: `MI_Hoge1`, `MI_Hoge2`）を付与して名前の重複を防ぎます。
 * **多言語対応:**
@@ -141,18 +145,22 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 ## 互換性
 
-*   **エンジンバージョン:** 5.4, 5.5
+*   **エンジンバージョン:** 5.4, 5.5, 5.6
 *   **プラットフォーム:** Windows (Win64)
 
 ## 変更履歴 (Changelog)
 
-### v1.0.1 (2025-07-13)
-* **UIの改善:** 一括リネーム機能を、見つけやすくするために「ツール」メニュー配下に専用の「MaterialInstanceRenamer」セクションを設けて移動しました。
-* **互換性:** Unreal Engine 5.5に対応しました。
+### v1.0.3 (2025-08-15)
+* **リファクタリング:** 名前変更のコアロジックを、ルールベースのシステムに全面的にリファクタリングしました。これにより、ベース名を抽出するためのパターンマッチングがより堅牢で、保守しやすく、予測可能になりました。
+* **互換性:** Unreal Engine 5.6に対応しました。
 
 ### v1.0.2 (2025-07-23)
 * **リファクタリング:** アセットのユニーク名を生成するロジックを、独自実装からエンジン標準のIAssetTools::CreateUniqueAssetName関数に置き換えました。これにより、処理の安定性とメンテナンス性が向上しました。
 * **コード整理:** その他、全体的なコード品質を向上させるための軽微なリファクタリングを実施しました。
+
+### v1.0.1 (2025-07-13)
+* **UIの改善:** 一括リネーム機能を、見つけやすくするために「ツール」メニュー配下に専用の「MaterialInstanceRenamer」セクションを設けて移動しました。
+* **互換性:** Unreal Engine 5.5に対応しました。
 
 ## マーケットプレイス
 
