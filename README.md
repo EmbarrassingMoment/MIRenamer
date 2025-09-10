@@ -54,7 +54,7 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 
 ## Compatibility
 
-*   **Engine Versions:** 5.4, 5.5
+*   **Engine Versions:** 5.4, 5.5, 5.6
 *   **Platforms:** Windows (Win64)
 
 ## Changelog
@@ -141,7 +141,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 ## 互換性
 
-*   **エンジンバージョン:** 5.4, 5.5
+*   **エンジンバージョン:** 5.4, 5.5, 5.6
 *   **プラットフォーム:** Windows (Win64)
 
 ## 変更履歴 (Changelog)
