@@ -21,9 +21,11 @@ public:
 	void SetBatchRename(bool bInBatchRename) { bIsBatchRename = bInBatchRename; }
 
 private:
+    void RegisterSettings();
+    void UnregisterSettings();
 	void OnRenameAllMaterialInstancesClicked();
 	void AddToolMenuEntry();
-	void AddMaterialContextMenuEntry(); 
+	void AddMaterialContextMenuEntry();
 
 	bool bIsBatchRename = false;
 };

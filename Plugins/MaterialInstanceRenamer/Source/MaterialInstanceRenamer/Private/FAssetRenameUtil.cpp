@@ -1,6 +1,8 @@
 // Copyright 2025 kurorekish. All Rights Reserved.
 
 #include "FAssetRenameUtil.h"
+#include "MaterialInstanceRenamerSettings.h"
+#include "MaterialInstanceRenamerSettings.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
@@ -27,9 +29,23 @@ struct FRenamePattern
 // Rule-based approach for extracting the base name
 bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& OutBaseName)
 {
+	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
+	const FString CurrentPrefix = Settings->RenamePrefix;
+
 	TArray<FRenamePattern> Patterns;
-	Patterns.Emplace(TEXT("MI_M_"), TEXT("_Inst"));
-	Patterns.Emplace(TEXT("MI_M_"), TEXT(""));
+	// Add patterns for the current custom prefix first, as they are most specific.
+	Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT("_Inst"));
+	Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT(""));
+
+	// Add patterns for the legacy "MI_" prefix to allow cleanup of old assets,
+	// but only if the custom prefix is not the same.
+	if (CurrentPrefix != TEXT("MI_"))
+	{
+		Patterns.Emplace(TEXT("MI_M_"), TEXT("_Inst"));
+		Patterns.Emplace(TEXT("MI_M_"), TEXT(""));
+	}
+
+	// Add general patterns
 	Patterns.Emplace(TEXT("M_"), TEXT("_Inst"));
 	Patterns.Emplace(TEXT(""), TEXT("_Inst"));
 
@@ -53,10 +69,12 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 // Main function to orchestrate the renaming process
 ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset)
 {
-	const FString RecommendedPrefix = TEXT("MI_");
+	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
+	const FString RecommendedPrefix = Settings->RenamePrefix;
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
 	// 1. Check if the asset should be skipped
+	// The MI_M_ prefix is a special case for cleaning up material-prefixed instances.
 	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(TEXT("MI_M_")))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Skipped rename for '%s' as it already has the recommended prefix."), *OldAssetName);
