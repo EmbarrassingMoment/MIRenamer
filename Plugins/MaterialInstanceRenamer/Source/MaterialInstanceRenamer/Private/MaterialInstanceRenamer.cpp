@@ -51,7 +51,7 @@ private:
         TMap<FString, FText>& EnMap = Table.Emplace(TEXT("en"));
         EnMap.Emplace(TEXT("RenameAll"), LOCTEXT("RenameAll_EN", "Rename All Material Instances"));
         EnMap.Emplace(TEXT("RenameAllTooltip"), LOCTEXT("RenameAllTooltip_EN", "Rename all Material Instances in the project to the recommended prefix."));
-        EnMap.Emplace(TEXT("RenameSelected"), LOCTEXT("RenameSelected_EN", "Rename to Recommended Prefix"));
+        EnMap.Emplace(TEXT("RenameSelected"), LOCTEXT("RenameSelected_EN", "Rename with Prefix ({0})"));
         EnMap.Emplace(TEXT("RenameSelectedTooltip"), LOCTEXT("RenameSelectedTooltip_EN", "Rename the selected Material Instance(s) to the recommended prefix ({0})."));
         EnMap.Emplace(TEXT("ConfirmBatchRename"), LOCTEXT("ConfirmBatchRename_EN", "Do you want to rename all Material Instances in the project? ({0})"));
         EnMap.Emplace(TEXT("NoAssetsFound"), LOCTEXT("NoAssetsFound_EN", "No Material Instances found to rename."));
@@ -64,7 +64,7 @@ private:
         TMap<FString, FText>& JaMap = Table.Emplace(TEXT("ja"));
         JaMap.Emplace(TEXT("RenameAll"), LOCTEXT("RenameAll_JP", "すべてのマテリアルインスタンスをリネーム"));
         JaMap.Emplace(TEXT("RenameAllTooltip"), LOCTEXT("RenameAllTooltip_JP", "プロジェクト内のすべてのマテリアルインスタンスを推奨プレフィックスにリネームします。"));
-        JaMap.Emplace(TEXT("RenameSelected"), LOCTEXT("RenameSelected_JP", "推奨プレフィックスにリネーム"));
+        JaMap.Emplace(TEXT("RenameSelected"), LOCTEXT("RenameSelected_JP", "プレフィックス({0})でリネーム"));
         JaMap.Emplace(TEXT("RenameSelectedTooltip"), LOCTEXT("RenameSelectedTooltip_JP", "選択したマテリアルインスタンスを推奨プレフィックス（{0}）にリネームします。"));
         JaMap.Emplace(TEXT("ConfirmBatchRename"), LOCTEXT("ConfirmBatchRename_JP", "プロジェクト内のすべてのマテリアルインスタンスをリネームしますか？（{0}）"));
         JaMap.Emplace(TEXT("NoAssetsFound"), LOCTEXT("NoAssetsFound_JP", "リネーム対象のマテリアルインスタンスが見つかりませんでした。"));
@@ -202,6 +202,10 @@ void FMaterialInstanceRenamerModule::AddMaterialContextMenuEntry()
             if (bHasMaterialInstance)
             {
                 const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
+                const FText Label = FText::Format(
+                    FLocalizationManager::GetText("RenameSelected"),
+                    FText::FromString(Settings->RenamePrefix)
+                );
                 const FText Tooltip = FText::Format(
                     FLocalizationManager::GetText("RenameSelectedTooltip"),
                     FText::FromString(Settings->RenamePrefix)
@@ -209,7 +213,7 @@ void FMaterialInstanceRenamerModule::AddMaterialContextMenuEntry()
 
                 InSection.AddMenuEntry(
                     "MaterialInstance_RenameToRecommendedPrefix",
-                    FLocalizationManager::GetText("RenameSelected"),
+                    Label,
                     Tooltip,
                     FSlateIcon(FAppStyle::GetAppStyleSetName(), "ClassIcon.MaterialInstanceConstant"),
                     FToolMenuExecuteAction::CreateStatic(&MenuExtension_MaterialInstance::OnExecuteAction)

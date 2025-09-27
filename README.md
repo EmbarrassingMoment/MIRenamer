@@ -9,7 +9,7 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 * **Customizable Prefix:**
     * You can change the default prefix `MI_` to any prefix you prefer (e.g., `P_`, `M_Inst_`) through the Project Settings menu.
 * **Context Menu Renaming:**
-    * You can rename one or more Material Instance assets by right-clicking them in the Content Browser and selecting "Rename to Recommended Prefix".
+    * You can rename one or more Material Instance assets by right-clicking them in the Content Browser and selecting the `Rename with Prefix (...)` option. The menu dynamically displays your current prefix.
     * An error message will be displayed if none of the selected assets are Material Instances.
     * If multiple assets are processed, a summary dialog is shown with a detailed breakdown of the results.
 * **Batch Renaming:**
@@ -45,7 +45,7 @@ You can customize the renaming prefix:
 ### Context Menu Rename
 
 1.  In the Content Browser, select one or more Material Instance assets you want to rename.
-2.  Right-click the selected asset(s) and choose "Rename to Recommended Prefix" from the context menu.
+2.  Right-click the selected asset(s) and choose the `Rename with Prefix (...)` option from the context menu. The menu item will dynamically display your currently configured prefix.
 3.  The asset name(s) will be changed to include your configured prefix. If multiple assets were processed, a summary dialog will be shown.
 
 ### Batch Rename
@@ -65,7 +65,7 @@ You can customize the renaming prefix:
 
 ### v1.1.0 (2025-09-26)
 * **New Feature:** Added the ability to customize the rename prefix via "Project Settings" > "Plugins" > "Material Instance Renamer". The default remains `MI_`.
-* **Improvement:** The UI and renaming logic now dynamically update based on the configured prefix.
+* **Improvement:** The UI and renaming logic now dynamically update based on the configured prefix. The context menu label also displays the current prefix for better clarity.
 
 ### v1.0.2 (2025-07-23)
 * **Refactor:** Replaced the custom unique name generation logic with the standard `IAssetTools::CreateUniqueAssetName` engine function for better stability and maintainability.
@@ -104,7 +104,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 * **プレフィックスのカスタマイズ:**
     * デフォルトのプレフィックス`MI_`を、プロジェクト設定メニューから好きなプレフィックス（例: `P_`, `M_Inst_`）に変更できます。
 * **コンテキストメニューからのリネーム:**
-    * コンテンツブラウザで1つまたは複数のマテリアルインスタンスアセットを右クリックし、「推奨プレフィックスに名前を変更」を選択することで、リネームできます。
+    * コンテンツブラウザで1つまたは複数のマテリアルインスタンスアセットを右クリックし、「プレフィックス(...)でリネーム」を選択することで、リネームできます。メニューには現在のプレフィックスが動的に表示されます。
     * 選択されたアセットにマテリアルインスタンスが含まれていない場合は、エラーメッセージが表示されます。
     * 複数のアセットを処理した場合、結果の内訳を示す概要ダイアログが表示されます。
 * **一括リネーム:**
@@ -140,7 +140,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 ### コンテキストメニューからのリネーム
 
 1.  コンテンツブラウザで、名前を変更したい1つまたは複数のマテリアルインスタンスアセットを選択します。
-2.  選択したアセットを右クリックし、表示されるコンテキストメニューから「推奨プレフィックスに名前を変更」を選択します。
+2.  選択したアセットを右クリックし、表示されるコンテキストメニューから「プレフィックス(...)でリネーム」を選択します。メニュー項目には、現在設定されているプレフィックスが動的に表示されます。
 3.  アセット名が、設定したプレフィックス付きの名前に変更されます。複数のアセットを処理した場合は、概要ダイアログが表示されます。
 
 ### 一括リネーム
@@ -160,7 +160,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 ### v1.1.0 (2025-09-26)
 * **新機能:** 「プロジェクト設定」>「プラグイン」>「Material Instance Renamer」から、リネームに使用するプレフィックスをカスタマイズできる機能を追加しました。デフォルトは`MI_`です。
-* **改善:** 設定されたプレフィックスに応じて、UIとリネーム処理が動的に更新されるようになりました。
+* **改善:** 設定されたプレフィックスに応じて、UIとリネーム処理が動的に更新されるようになりました。また、明確化のためにコンテキストメニューのラベルにも現在のプレフィックスが表示されます。
 
 ### v1.0.2 (2025-07-23)
 * **リファクタリング:** アセットのユニーク名を生成するロジックを、独自実装からエンジン標準のIAssetTools::CreateUniqueAssetName関数に置き換えました。これにより、処理の安定性とメンテナンス性が向上しました。
