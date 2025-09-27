@@ -19,7 +19,7 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
     * After completion, a summary dialog shows a detailed breakdown of the results (Renamed, Skipped, Failed, Invalid Pattern).
 * **Naming Convention:**
     * The plugin renames assets to use a customizable prefix (default is `MI_`). For example, `M_Sample_Inst` becomes `MI_Sample`.
-    * The logic intelligently handles various common naming schemes to extract a clean base name, such as `M_AssetName_Inst`, `AssetName_Inst`, and even `PREFIX_M_AssetName_Inst`.
+    * The logic intelligently extracts a clean base name by recognizing common patterns like `M_AssetName_Inst` or `AssetName_Inst`. It also handles names that include the prefix configured in the project settings, such as `[YourPrefix]_M_AssetName_Inst`.
     * Assets that already start with the configured prefix are skipped to avoid redundant renaming.
 * **Automatic Handling of Duplicate Names:**
     * If the new name already exists after renaming, a numerical suffix (e.g., `MI_Hoge1`, `MI_Hoge2`) is automatically appended to prevent naming conflicts.
@@ -114,7 +114,7 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
     * 処理完了後、結果（リネーム、スキップ、失敗、不正なパターン）の内訳を示す概要ダイアログが表示されます。
 * **命名規則:**
     * アセット名を、カスタマイズ可能なプレフィックス（デフォルト: `MI_`）を使用するようにリネームします。 (例: `M_Sample_Inst` → `MI_Sample`)
-    * `M_アセット名_Inst`や`アセット名_Inst`、さらには`PREFIX_M_アセット名_Inst`のような、様々な命名規則から適切なベース名をインテリジェントに抽出します。
+    * `M_アセット名_Inst`や`アセット名_Inst`のような一般的なパターンを認識してベース名を抽出します。また、プロジェクト設定で指定されたプレフィックスが既についている場合（例: `[設定プレフィックス]_M_アセット名_Inst`）も正しく処理します。
     * 既に設定されたプレフィックスで始まるアセットは、不要なリネームを避けるためにスキップされます。
 * **重複名の自動処理:**
     * リネーム後の名前が既に存在する場合、自動的に連番（例: `MI_Hoge1`, `MI_Hoge2`）を付与して名前の重複を防ぎます。
