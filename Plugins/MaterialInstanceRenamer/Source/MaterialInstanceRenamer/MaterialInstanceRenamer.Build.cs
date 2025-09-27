@@ -25,7 +25,8 @@ public class MaterialInstanceRenamer : ModuleRules
             new string[]
             {
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "Settings"
             }
         );
 
