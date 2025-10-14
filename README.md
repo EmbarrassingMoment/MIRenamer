@@ -21,6 +21,12 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
     * The plugin renames assets to use a customizable prefix (default is `MI_`). For example, `M_Sample_Inst` becomes `MI_Sample`.
     * The logic intelligently handles various common naming schemes to extract a clean base name, such as `M_AssetName_Inst`, `AssetName_Inst`, and even `PREFIX_M_AssetName_Inst`.
     * Assets that already start with the configured prefix are skipped to avoid redundant renaming.
+* **Naming Convention Details:**
+    * The plugin extracts the "base name" of a Material Instance by removing common prefixes and suffixes. This base name is then used to construct the new name.
+    * **Suffixes Removed:** `_Inst`
+    * **Prefixes Removed:** `M_`
+    * The system is designed to handle various combinations. For example, if an asset is named `M_MyAsset_Inst`, the logic will identify `MyAsset` as the base name.
+    * It also handles cases where an old prefix was used, such as `MI_M_MyAsset_Inst`, ensuring a clean rename to `YourPrefix_MyAsset`.
 * **Automatic Handling of Duplicate Names:**
     * If the new name already exists after renaming, a numerical suffix (e.g., `MI_Hoge1`, `MI_Hoge2`) is automatically appended to prevent naming conflicts.
 * **Localization:**
@@ -116,6 +122,12 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
     * アセット名を、カスタマイズ可能なプレフィックス（デフォルト: `MI_`）を使用するようにリネームします。 (例: `M_Sample_Inst` → `MI_Sample`)
     * `M_アセット名_Inst`や`アセット名_Inst`、さらには`PREFIX_M_アセット名_Inst`のような、様々な命名規則から適切なベース名をインテリジェントに抽出します。
     * 既に設定されたプレフィックスで始まるアセットは、不要なリネームを避けるためにスキップされます。
+* **命名規則の詳細:**
+    * このプラグインは、一般的なプレフィックスやサフィックスを削除してマテリアルインスタンスの「ベース名」を抽出します。このベース名が、新しい名前を構成するために使用されます。
+    * **削除されるサフィックス:** `_Inst`
+    * **削除されるプレフィックス:** `M_`
+    * このシステムは、様々な組み合わせに対応できるように設計されています。例えば、アセット名が `M_MyAsset_Inst` の場合、`MyAsset` がベース名として識別されます。
+    * `MI_M_MyAsset_Inst` のような古いプレフィックスが使用されているケースも処理し、`設定したプレフィックス_MyAsset` へとクリーンにリネームします。
 * **重複名の自動処理:**
     * リネーム後の名前が既に存在する場合、自動的に連番（例: `MI_Hoge1`, `MI_Hoge2`）を付与して名前の重複を防ぎます。
 * **多言語対応:**
