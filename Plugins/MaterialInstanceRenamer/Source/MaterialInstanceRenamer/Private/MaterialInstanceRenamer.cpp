@@ -18,6 +18,8 @@
 #include "Misc/ScopedSlowTask.h"
 #include "Styling/AppStyle.h"
 #include "Algo/AnyOf.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "FMaterialInstanceRenamerModule"
 
@@ -72,6 +74,9 @@ private:
         JaMap.Emplace(TEXT("NotAMaterialInstance"), LOCTEXT("NotAMaterialInstance_JP", "選択されたアセットはマテリアルインスタンスではありません。"));
         JaMap.Emplace(TEXT("RenameComplete"), LOCTEXT("RenameComplete_JP", "リネーム完了"));
         JaMap.Emplace(TEXT("RenameSummary"), LOCTEXT("RenameSummary_JP", "リネーム: {0}\nスキップ: {1}\n失敗: {2}\n不正なパターン: {3}"));
+        JaMap.Emplace(TEXT("AutoRenameOnCreate"), LOCTEXT("AutoRenameOnCreate_JP", "作成時に自動リネーム"));
+        JaMap.Emplace(TEXT("ShowNotificationOnAutoRename"), LOCTEXT("ShowNotificationOnAutoRename_JP", "自動リネーム時に通知を表示"));
+        JaMap.Emplace(TEXT("AutoRenameNotification"), LOCTEXT("AutoRenameNotification_JP", "{0} を {1} にリネームしました"));
 
         return Table;
     }
@@ -152,11 +157,20 @@ void FMaterialInstanceRenamerModule::StartupModule()
     if (IsRunningCommandlet()) return;
     AddMaterialContextMenuEntry();
     AddToolMenuEntry();
+
+    FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
+    AssetRegistryModule.Get().OnAssetAdded().AddRaw(this, &FMaterialInstanceRenamerModule::OnAssetAdded);
 }
 
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
     UnregisterSettings();
+
+    if (FModuleManager::Get().IsModuleLoaded(AssetRegistryConstants::ModuleName))
+    {
+        FAssetRegistryModule& AssetRegistryModule = FModuleManager::GetModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
+        AssetRegistryModule.Get().OnAssetAdded().RemoveAll(this);
+    }
 }
 
 void FMaterialInstanceRenamerModule::RegisterSettings()
@@ -231,12 +245,42 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
     UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
     FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer", LOCTEXT("MaterialInstanceRenamerSection", "MaterialInstanceRenamer"));
 
-    Section.AddMenuEntry(
-        "RenameAllMaterialInstances",
-        FLocalizationManager::GetText("RenameAll"),
-        FLocalizationManager::GetText("RenameAllTooltip"),
-        FSlateIcon(),
-        FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
+    Section.AddSubMenu(
+        "MaterialInstanceRenamerSubMenu",
+        LOCTEXT("MaterialInstanceRenamerSubMenuLabel", "MaterialInstanceRenamer"),
+        LOCTEXT("MaterialInstanceRenamerSubMenuTooltip", "Material Instance Renamer Tools"),
+        FNewToolMenuDelegate::CreateLambda([this](UToolMenu* SubMenu)
+        {
+            FToolMenuSection& SubMenuSection = SubMenu->AddSection("General", LOCTEXT("GeneralSection", "General"));
+            SubMenuSection.AddMenuEntry(
+                "RenameAllMaterialInstances",
+                FLocalizationManager::GetText("RenameAll"),
+                FLocalizationManager::GetText("RenameAllTooltip"),
+                FSlateIcon(),
+                FUIAction(FExecuteAction::CreateRaw(this, &FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked))
+            );
+
+            SubMenuSection.AddMenuEntry(
+                "ToggleAutoRename",
+                FLocalizationManager::GetText("AutoRenameOnCreate"),
+                FLocalizationManager::GetText("AutoRenameOnCreate"),
+                FSlateIcon(),
+                FUIAction(
+                    FExecuteAction::CreateLambda([]()
+                    {
+                        UMaterialInstanceRenamerSettings* Settings = GetMutableDefault<UMaterialInstanceRenamerSettings>();
+                        Settings->bAutoRenameOnCreate = !Settings->bAutoRenameOnCreate;
+                        Settings->SaveConfig();
+                    }),
+                    FCanExecuteAction(),
+                    FIsActionChecked::CreateLambda([]()
+                    {
+                        return GetDefault<UMaterialInstanceRenamerSettings>()->bAutoRenameOnCreate;
+                    })
+                ),
+                EUserInterfaceActionType::ToggleButton
+            );
+        })
     );
 }
 
@@ -304,6 +348,42 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         FText::AsNumber(InvalidPatternCount)
     );
     FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+}
+
+void FMaterialInstanceRenamerModule::OnAssetAdded(const FAssetData& AssetData)
+{
+	if (bIsRenamingAsset)
+	{
+		return;
+	}
+
+	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
+	if (!Settings->bAutoRenameOnCreate)
+	{
+		return;
+	}
+
+	if (!AssetData.GetClass()->IsChildOf(UMaterialInstanceConstant::StaticClass()))
+	{
+		return;
+	}
+
+	bIsRenamingAsset = true;
+	const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData);
+	bIsRenamingAsset = false;
+
+	if (Result == ERenameResult::Renamed && Settings->bShowNotificationOnAutoRename)
+	{
+		FText Message = FText::Format(
+			FLocalizationManager::GetText("AutoRenameNotification"),
+			FText::FromString(AssetData.AssetName.ToString()),
+			FText::FromString(FAssetRenameUtil::GetNewAssetName(AssetData.AssetName.ToString(), Settings->RenamePrefix))
+		);
+
+		FNotificationInfo Info(Message);
+		Info.ExpireDuration = 3.0f;
+		FSlateNotificationManager::Get().AddNotification(Info);
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

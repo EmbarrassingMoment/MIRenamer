@@ -5,4 +5,6 @@
 UMaterialInstanceRenamerSettings::UMaterialInstanceRenamerSettings()
 {
 	RenamePrefix = TEXT("MI_");
+	bAutoRenameOnCreate = false;
+	bShowNotificationOnAutoRename = false;
 }

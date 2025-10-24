@@ -99,6 +99,17 @@ ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& Selecte
 }
 
 // Performs the actual asset rename using the AssetTools module.
+
+FString FAssetRenameUtil::GetNewAssetName(const FString& OldAssetName, const FString& Prefix)
+{
+	FString BaseName;
+	if (ExtractBaseName(OldAssetName, BaseName))
+	{
+		return Prefix + BaseName;
+	}
+	return OldAssetName;
+}
+
 bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FString& NewName)
 {
 	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");

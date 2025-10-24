@@ -27,5 +27,8 @@ private:
 	void AddToolMenuEntry();
 	void AddMaterialContextMenuEntry();
 
+	void OnAssetAdded(const FAssetData& AssetData);
+
 	bool bIsBatchRename = false;
+	bool bIsRenamingAsset = false;
 };
