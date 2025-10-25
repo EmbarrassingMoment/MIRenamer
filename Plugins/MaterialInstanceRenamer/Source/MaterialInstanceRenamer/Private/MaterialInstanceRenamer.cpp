@@ -35,13 +35,27 @@ public:
         const FString CultureName = FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName();
         const TMap<FString, FText>* LangMap = LocalizationTable.Find(CultureName);
 
-        if (LangMap && LangMap->Contains(Key))
+        if (LangMap)
         {
-            return (*LangMap)[Key];
+            const FText* FoundText = LangMap->Find(Key);
+            if (FoundText)
+            {
+                return *FoundText;
+            }
         }
 
         // Fallback to English
-        return LocalizationTable[TEXT("en")][Key];
+        const TMap<FString, FText>* EnLangMap = LocalizationTable.Find(TEXT("en"));
+        if (EnLangMap)
+        {
+            const FText* FoundText = EnLangMap->Find(Key);
+            if (FoundText)
+            {
+                return *FoundText;
+            }
+        }
+
+        return FText::FromString(FString::Printf(TEXT("LOC_KEY_NOT_FOUND: %s"), *Key));
     }
 
 private:
@@ -62,8 +76,13 @@ private:
         EnMap.Emplace(TEXT("RenameComplete"), LOCTEXT("RenameComplete_EN", "Rename Complete"));
         EnMap.Emplace(TEXT("RenameSummary"), LOCTEXT("RenameSummary_EN", "Renamed: {0}\nSkipped: {1}\nFailed: {2}\nInvalid Pattern: {3}"));
         EnMap.Emplace(TEXT("AutoRenameOnCreate"), LOCTEXT("AutoRenameOnCreate_EN", "Auto-Rename on Create"));
+        EnMap.Emplace(TEXT("AutoRenameOnCreateTooltip"), LOCTEXT("AutoRenameOnCreateTooltip_EN", "Toggle auto-renaming of material instances on creation"));
         EnMap.Emplace(TEXT("ShowNotificationOnAutoRename"), LOCTEXT("ShowNotificationOnAutoRename_EN", "Show Notification on Auto-Rename"));
         EnMap.Emplace(TEXT("AutoRenameNotification"), LOCTEXT("AutoRenameNotification_EN", "Renamed {0} to {1}"));
+		EnMap.Emplace(TEXT("MenuSection"), LOCTEXT("MenuSection_EN", "MaterialInstanceRenamer"));
+		EnMap.Emplace(TEXT("MenuSubMenu"), LOCTEXT("MenuSubMenu_EN", "MaterialInstanceRenamer"));
+		EnMap.Emplace(TEXT("MenuSubMenuTooltip"), LOCTEXT("MenuSubMenuTooltip_EN", "Material Instance Renamer Tools"));
+		EnMap.Emplace(TEXT("MenuGeneralSection"), LOCTEXT("MenuGeneralSection_EN", "General"));
 
         // Japanese
         TMap<FString, FText>& JaMap = Table.Emplace(TEXT("ja"));
@@ -78,8 +97,13 @@ private:
         JaMap.Emplace(TEXT("RenameComplete"), LOCTEXT("RenameComplete_JP", "リネーム完了"));
         JaMap.Emplace(TEXT("RenameSummary"), LOCTEXT("RenameSummary_JP", "リネーム: {0}\nスキップ: {1}\n失敗: {2}\n不正なパターン: {3}"));
         JaMap.Emplace(TEXT("AutoRenameOnCreate"), LOCTEXT("AutoRenameOnCreate_JP", "作成時に自動リネーム"));
+        JaMap.Emplace(TEXT("AutoRenameOnCreateTooltip"), LOCTEXT("AutoRenameOnCreateTooltip_JP", "作成時のマテリアルインスタンスの自動リネームを切り替えます"));
         JaMap.Emplace(TEXT("ShowNotificationOnAutoRename"), LOCTEXT("ShowNotificationOnAutoRename_JP", "自動リネーム時に通知を表示"));
         JaMap.Emplace(TEXT("AutoRenameNotification"), LOCTEXT("AutoRenameNotification_JP", "{0} を {1} にリネームしました"));
+        JaMap.Emplace(TEXT("MenuSection"), LOCTEXT("MenuSection_JP", "MaterialInstanceRenamer"));
+        JaMap.Emplace(TEXT("MenuSubMenu"), LOCTEXT("MenuSubMenu_JP", "MaterialInstanceRenamer"));
+		JaMap.Emplace(TEXT("MenuSubMenuTooltip"), LOCTEXT("MenuSubMenuTooltip_JP", "Material Instance Renamer ツール"));
+		JaMap.Emplace(TEXT("MenuGeneralSection"), LOCTEXT("MenuGeneralSection_JP", "一般"));
 
         return Table;
     }
@@ -246,15 +270,15 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
 
     FToolMenuOwnerScoped OwnerScoped(this);
     UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Tools");
-    FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer", LOCTEXT("MaterialInstanceRenamerSection", "MaterialInstanceRenamer"));
+    FToolMenuSection& Section = Menu->FindOrAddSection("MaterialInstanceRenamer", FLocalizationManager::GetText("MenuSection"));
 
     Section.AddSubMenu(
         "MaterialInstanceRenamerSubMenu",
-        LOCTEXT("MaterialInstanceRenamerSubMenuLabel", "MaterialInstanceRenamer"),
-        LOCTEXT("MaterialInstanceRenamerSubMenuTooltip", "Material Instance Renamer Tools"),
+        FLocalizationManager::GetText("MenuSubMenu"),
+        FLocalizationManager::GetText("MenuSubMenuTooltip"),
         FNewToolMenuDelegate::CreateLambda([this](UToolMenu* SubMenu)
         {
-            FToolMenuSection& SubMenuSection = SubMenu->AddSection("General", LOCTEXT("GeneralSection", "General"));
+            FToolMenuSection& SubMenuSection = SubMenu->AddSection("General", FLocalizationManager::GetText("MenuGeneralSection"));
             SubMenuSection.AddMenuEntry(
                 "RenameAllMaterialInstances",
                 FLocalizationManager::GetText("RenameAll"),
@@ -266,7 +290,7 @@ void FMaterialInstanceRenamerModule::AddToolMenuEntry()
             SubMenuSection.AddMenuEntry(
                 "ToggleAutoRename",
                 FLocalizationManager::GetText("AutoRenameOnCreate"),
-                FLocalizationManager::GetText("AutoRenameOnCreate"),
+                FLocalizationManager::GetText("AutoRenameOnCreateTooltip"),
                 FSlateIcon(),
                 FUIAction(
                     FExecuteAction::CreateLambda([]()
