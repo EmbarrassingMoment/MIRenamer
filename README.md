@@ -17,6 +17,12 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
     * A confirmation dialog is displayed before processing.
     * A progress dialog is shown during the operation.
     * After completion, a summary dialog shows a detailed breakdown of the results (Renamed, Skipped, Failed, Invalid Pattern).
+* **Auto Rename on Asset Creation:**
+    * Automatically renames Material Instance assets the moment they are created in the Content Browser.
+    * This feature is disabled by default to prevent unwanted renames.
+    * It can be enabled via "Project Settings" > "Plugins" > "Material Instance Renamer" > "Auto-Rename on Create".
+    * It can also be toggled on/off from the "Tools" > "MaterialInstanceRenamer" menu.
+    * Optional notifications are displayed in the bottom-right corner of the editor upon renaming, which can be enabled/disabled in the project settings.
 * **Naming Convention:**
     * The plugin renames assets to use a customizable prefix (default is `MI_`). For example, `M_Sample_Inst` becomes `MI_Sample`.
     * The logic intelligently handles various common naming schemes to extract a clean base name, such as `M_AssetName_Inst`, `AssetName_Inst`, and even `PREFIX_M_AssetName_Inst`.
@@ -62,6 +68,10 @@ You can customize the renaming prefix:
 *   **Platforms:** Windows (Win64)
 
 ## Changelog
+
+### v1.2.0 (2025-10-25)
+* **New Feature:** Added an "Auto Rename on Asset Creation" feature. This allows for automatic renaming of Material Instances as soon as they are created. The feature is disabled by default but can be enabled in Project Settings or toggled via the "Tools" menu.
+* **Bug Fix:** Fixed multiple crashes and compilation errors related to UI registration timing, localization, and deprecated API usage. The plugin is now more stable.
 
 ### v1.1.0 (2025-09-26)
 * **New Feature:** Added the ability to customize the rename prefix via "Project Settings" > "Plugins" > "Material Instance Renamer". The default remains `MI_`.
@@ -112,6 +122,12 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
     * 処理前に確認ダイアログが表示されます。
     * 処理中は進捗ダイアログが表示されます。
     * 処理完了後、結果（リネーム、スキップ、失敗、不正なパターン）の内訳を示す概要ダイアログが表示されます。
+* **アセット作成時の自動リネーム:**
+    * コンテンツブラウザでマテリアルインスタンスアセットが作成された瞬間に、自動でリネームを実行します。
+    * 意図しないリネームを防ぐため、この機能はデフォルトで無効になっています。
+    * 「プロジェクト設定」 > 「プラグイン」 > 「Material Instance Renamer」 > 「Auto-Rename on Create」から有効にできます。
+    * 「ツール」 > 「MaterialInstanceRenamer」メニューからもオン/オフを切り替え可能です。
+    * リネーム実行時にエディタ右下にオプションの通知を表示します。この通知はプロジェクト設定で有効/無効を切り替えられます。
 * **命名規則:**
     * アセット名を、カスタマイズ可能なプレフィックス（デフォルト: `MI_`）を使用するようにリネームします。 (例: `M_Sample_Inst` → `MI_Sample`)
     * `M_アセット名_Inst`や`アセット名_Inst`、さらには`PREFIX_M_アセット名_Inst`のような、様々な命名規則から適切なベース名をインテリジェントに抽出します。
@@ -157,6 +173,10 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 *   **プラットフォーム:** Windows (Win64)
 
 ## 変更履歴 (Changelog)
+
+### v1.2.0 (2025-10-25)
+* **新機能:** 「アセット作成時の自動リネーム」機能を追加しました。これは、マテリアルインスタンスが作成されると同時に自動でリネームを行う機能です。デフォルトでは無効ですが、プロジェクト設定または「ツール」メニューから有効にできます。
+* **バグ修正:** UIの登録タイミング、ローカライゼーション、非推奨APIの使用に関連する複数のクラッシュとコンパイルエラーを修正しました。プラグインの安定性が向上しました。
 
 ### v1.1.0 (2025-09-26)
 * **新機能:** 「プロジェクト設定」>「プラグイン」>「Material Instance Renamer」から、リネームに使用するプレフィックスをカスタマイズできる機能を追加しました。デフォルトは`MI_`です。
