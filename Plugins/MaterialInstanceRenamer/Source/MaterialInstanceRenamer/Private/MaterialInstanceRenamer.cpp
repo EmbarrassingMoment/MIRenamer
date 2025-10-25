@@ -61,6 +61,9 @@ private:
         EnMap.Emplace(TEXT("NotAMaterialInstance"), LOCTEXT("NotAMaterialInstance_EN", "The selected asset is not a Material Instance."));
         EnMap.Emplace(TEXT("RenameComplete"), LOCTEXT("RenameComplete_EN", "Rename Complete"));
         EnMap.Emplace(TEXT("RenameSummary"), LOCTEXT("RenameSummary_EN", "Renamed: {0}\nSkipped: {1}\nFailed: {2}\nInvalid Pattern: {3}"));
+        EnMap.Emplace(TEXT("AutoRenameOnCreate"), LOCTEXT("AutoRenameOnCreate_EN", "Auto-Rename on Create"));
+        EnMap.Emplace(TEXT("ShowNotificationOnAutoRename"), LOCTEXT("ShowNotificationOnAutoRename_EN", "Show Notification on Auto-Rename"));
+        EnMap.Emplace(TEXT("AutoRenameNotification"), LOCTEXT("AutoRenameNotification_EN", "Renamed {0} to {1}"));
 
         // Japanese
         TMap<FString, FText>& JaMap = Table.Emplace(TEXT("ja"));
