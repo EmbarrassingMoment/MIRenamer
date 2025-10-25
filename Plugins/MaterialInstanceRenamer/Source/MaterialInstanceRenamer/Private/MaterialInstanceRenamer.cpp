@@ -169,7 +169,7 @@ namespace MenuExtension_MaterialInstance
                 FText::AsNumber(FailedCount),
                 FText::AsNumber(InvalidPatternCount)
             );
-            FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+            FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, DialogTitle);
         }
     }
 }
@@ -193,7 +193,7 @@ void FMaterialInstanceRenamerModule::ShutdownModule()
 {
     UnregisterSettings();
 
-    if (UToolMenus::IsToolMenuUIValid())
+    if (UToolMenus::Get())
     {
         UToolMenus::Get()->UnregisterOwner(this);
     }
@@ -379,7 +379,7 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         FText::AsNumber(FailedCount),
         FText::AsNumber(InvalidPatternCount)
     );
-    FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+    FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, DialogTitle);
 }
 
 void FMaterialInstanceRenamerModule::RegisterMenus()
