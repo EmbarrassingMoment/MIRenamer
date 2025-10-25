@@ -67,6 +67,12 @@ You can customize the renaming prefix:
 *   **Engine Versions:** 5.4, 5.5, 5.6
 *   **Platforms:** Windows (Win64)
 
+## Known Issues
+
+*   **Redirectors May Remain After Auto-Renaming:**
+    * When the "Auto Rename on Asset Creation" feature is enabled, renaming a newly created Material Instance may leave a redirector in the original asset's place. While this redirector is harmless, it can clutter up your project.
+    * **How to Fix:** To clean up these redirectors, right-click on the folder containing the assets (or a parent folder) in the Content Browser and select "Fix Up Redirectors in Folder" from the context menu. This will consolidate the redirectors and remove the unnecessary files.
+
 ## Changelog
 
 ### v1.2.0 (2025-10-25)
@@ -171,6 +177,12 @@ This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengi
 
 *   **エンジンバージョン:** 5.4, 5.5, 5.6
 *   **プラットフォーム:** Windows (Win64)
+
+## 既知の問題
+
+*   **自動リネーム後にリダイレクタが残る可能性:**
+    * 「アセット作成時の自動リネーム」機能が有効な場合、新規作成されたマテリアルインスタンスをリネームすると、元のアセットの場所にリダイレクタが残ることがあります。このリダイレクタ自体に害はありませんが、プロジェクト内が散らかる原因になります。
+    * **修正方法:** これらのリダイレクタを整理するには、コンテンツブラウザでアセットが含まれるフォルダ（またはその親フォルダ）を右クリックし、コンテキストメニューから「フォルダ内のリダイレクタを修正」を選択します。これにより、リダイレクタが統合され、不要なファイルが削除されます。
 
 ## 変更履歴 (Changelog)
 
