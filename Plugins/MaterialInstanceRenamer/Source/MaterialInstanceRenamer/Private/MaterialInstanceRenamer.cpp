@@ -149,7 +149,8 @@ namespace MenuExtension_MaterialInstance
             FString AssetName = AssetData.AssetName.ToString();
             SlowTask.EnterProgressFrame(1, FText::Format(LOCTEXT("RenamingAsset", "Renaming {0}..."), FText::FromString(AssetName)));
 
-            const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData);
+			FString NewName;
+            const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData, NewName);
             switch (Result)
             {
                 case ERenameResult::Renamed: RenamedCount++; break;
@@ -361,7 +362,8 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         FString AssetName = AssetData.AssetName.ToString();
         SlowTask.EnterProgressFrame(1, FText::Format(LOCTEXT("RenamingAsset", "Renaming {0}..."), FText::FromString(AssetName)));
 
-        const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData);
+		FString NewName;
+        const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData, NewName);
         switch (Result)
         {
             case ERenameResult::Renamed: RenamedCount++; break;
@@ -407,7 +409,8 @@ void FMaterialInstanceRenamerModule::OnAssetAdded(const FAssetData& AssetData)
 	}
 
 	bIsRenamingAsset = true;
-	const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData);
+	FString NewName;
+	const ERenameResult Result = FAssetRenameUtil::RenameMaterialInstance(AssetData, NewName);
 	bIsRenamingAsset = false;
 
 	if (Result == ERenameResult::Renamed && Settings->bShowNotificationOnAutoRename)
@@ -415,7 +418,7 @@ void FMaterialInstanceRenamerModule::OnAssetAdded(const FAssetData& AssetData)
 		FText Message = FText::Format(
 			FLocalizationManager::GetText("AutoRenameNotification"),
 			FText::FromString(AssetData.AssetName.ToString()),
-			FText::FromString(FAssetRenameUtil::GetNewAssetName(AssetData.AssetName.ToString(), Settings->RenamePrefix))
+			FText::FromString(NewName)
 		);
 
 		FNotificationInfo Info(Message);

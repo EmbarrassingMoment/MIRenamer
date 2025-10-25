@@ -30,18 +30,10 @@ public:
 	 * extracting the base name, and performing the rename.
 	 *
 	 * @param SelectedAsset The asset data of the material instance to rename.
+	 * @param OutNewName The new name of the asset if the rename was successful.
 	 * @return An ERenameResult indicating the outcome of the operation.
 	 */
-	static ERenameResult RenameMaterialInstance(const FAssetData& SelectedAsset);
-
-	/**
-	 * Generates the new asset name based on the old name and prefix.
-	 *
-	 * @param OldAssetName The current name of the asset.
-	 * @param Prefix The prefix to use for the new name.
-	 * @return The new asset name.
-	 */
-	static FString GetNewAssetName(const FString& OldAssetName, const FString& Prefix);
+	static ERenameResult RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName);
 
 private:
 	/**

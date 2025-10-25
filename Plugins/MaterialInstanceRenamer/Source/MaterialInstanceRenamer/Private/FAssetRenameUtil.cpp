@@ -67,7 +67,7 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 }
 
 // Main function to orchestrate the renaming process
-ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset)
+ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName)
 {
 	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
 	const FString RecommendedPrefix = Settings->RenamePrefix;
@@ -90,7 +90,7 @@ ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& Selecte
 
 	// 3. Construct the new name and perform the rename
 	FString NewAssetName = RecommendedPrefix + BaseName;
-	if (RenameAsset(SelectedAsset, NewAssetName))
+	if (RenameAsset(SelectedAsset, NewAssetName, OutNewName))
 	{
 		return ERenameResult::Renamed;
 	}
@@ -99,18 +99,7 @@ ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& Selecte
 }
 
 // Performs the actual asset rename using the AssetTools module.
-
-FString FAssetRenameUtil::GetNewAssetName(const FString& OldAssetName, const FString& Prefix)
-{
-	FString BaseName;
-	if (ExtractBaseName(OldAssetName, BaseName))
-	{
-		return Prefix + BaseName;
-	}
-	return OldAssetName;
-}
-
-bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FString& NewName)
+bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FString& NewName, FString& OutNewName)
 {
 	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
 	IAssetTools& AssetTools = AssetToolsModule.Get();
@@ -135,6 +124,7 @@ bool FAssetRenameUtil::RenameAsset(const FAssetData& AssetToRename, const FStrin
 	if (AssetTools.RenameAssets(AssetsToRenameData))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Successfully renamed '%s' to '%s'"), *AssetToRename.AssetName.ToString(), *UniqueAssetName);
+		OutNewName = UniqueAssetName;
 		return true;
 	}
 
