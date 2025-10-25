@@ -50,7 +50,8 @@ private:
 	 *
 	 * @param AssetToRename The asset data of the asset to rename.
 	 * @param NewName The desired new name for the asset.
+	 * @param OutNewName The new name of the asset if the rename was successful.
 	 * @return True if the rename was successful, false otherwise.
 	 */
-	static bool RenameAsset(const FAssetData& AssetToRename, const FString& NewName);
+	static bool RenameAsset(const FAssetData& AssetToRename, const FString& NewName, FString& OutNewName);
 };
