@@ -182,8 +182,8 @@ void FMaterialInstanceRenamerModule::StartupModule()
 {
     RegisterSettings();
     if (IsRunningCommandlet()) return;
-    AddMaterialContextMenuEntry();
-    AddToolMenuEntry();
+
+    UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FMaterialInstanceRenamerModule::RegisterMenus));
 
     FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(AssetRegistryConstants::ModuleName);
     AssetRegistryModule.Get().OnAssetAdded().AddRaw(this, &FMaterialInstanceRenamerModule::OnAssetAdded);
@@ -192,6 +192,11 @@ void FMaterialInstanceRenamerModule::StartupModule()
 void FMaterialInstanceRenamerModule::ShutdownModule()
 {
     UnregisterSettings();
+
+    if (UToolMenus::IsToolMenuUIValid())
+    {
+        UToolMenus::Get()->UnregisterOwner(this);
+    }
 
     if (FModuleManager::Get().IsModuleLoaded(AssetRegistryConstants::ModuleName))
     {
@@ -375,6 +380,12 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         FText::AsNumber(InvalidPatternCount)
     );
     FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+}
+
+void FMaterialInstanceRenamerModule::RegisterMenus()
+{
+	AddToolMenuEntry();
+	AddMaterialContextMenuEntry();
 }
 
 void FMaterialInstanceRenamerModule::OnAssetAdded(const FAssetData& AssetData)

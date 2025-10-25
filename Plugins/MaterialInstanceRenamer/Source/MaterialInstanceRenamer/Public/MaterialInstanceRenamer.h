@@ -29,6 +29,8 @@ private:
 
 	void OnAssetAdded(const FAssetData& AssetData);
 
+	void RegisterMenus();
+
 	bool bIsBatchRename = false;
 	bool bIsRenamingAsset = false;
 };
