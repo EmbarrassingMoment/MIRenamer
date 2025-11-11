@@ -2,7 +2,6 @@
 
 #include "FAssetRenameUtil.h"
 #include "MaterialInstanceRenamerSettings.h"
-#include "MaterialInstanceRenamerSettings.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
