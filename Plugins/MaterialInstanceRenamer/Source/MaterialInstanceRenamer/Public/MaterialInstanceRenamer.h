@@ -17,9 +17,6 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-	bool IsBatchRename() const { return bIsBatchRename; }
-	void SetBatchRename(bool bInBatchRename) { bIsBatchRename = bInBatchRename; }
-
 private:
     void RegisterSettings();
     void UnregisterSettings();
@@ -31,6 +28,5 @@ private:
 
 	void RegisterMenus();
 
-	bool bIsBatchRename = false;
 	bool bIsRenamingAsset = false;
 };
