@@ -68,8 +68,14 @@ You can customize the renaming prefix:
 
 ## Compatibility
 
-*   **Engine Versions:** 5.4, 5.5
+*   **Engine Versions:** 5.4, 5.5, 5.6
 *   **Platforms:** Windows (Win64)
+
+## Known Issues
+
+*   **Redirectors May Remain After Auto-Renaming:**
+    * When the "Auto Rename on Asset Creation" feature is enabled, renaming a newly created Material Instance may leave a redirector in the original asset's place. While this redirector is harmless, it can clutter up your project.
+    * **How to Fix:** To clean up these redirectors, right-click on the folder containing the assets (or a parent folder) in the Content Browser and select "Fix Up Redirectors in Folder" from the context menu. This will consolidate the redirectors and remove the unnecessary files.
 
 ## Changelog
 
@@ -104,3 +110,5 @@ You can find this plugin on the Unreal Engine Marketplace:
 ## License
 
 This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengine.com/eula).
+
+---
