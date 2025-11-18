@@ -170,7 +170,11 @@ namespace MenuExtension_MaterialInstance
                 FText::AsNumber(FailedCount),
                 FText::AsNumber(InvalidPatternCount)
             );
+#if (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 7)
+            FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+#else
             FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, DialogTitle);
+#endif
         }
     }
 }
@@ -381,7 +385,11 @@ void FMaterialInstanceRenamerModule::OnRenameAllMaterialInstancesClicked()
         FText::AsNumber(FailedCount),
         FText::AsNumber(InvalidPatternCount)
     );
+#if (ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 7)
+    FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, &DialogTitle);
+#else
     FMessageDialog::Open(EAppMsgType::Ok, DialogMessage, DialogTitle);
+#endif
 }
 
 void FMaterialInstanceRenamerModule::RegisterMenus()
