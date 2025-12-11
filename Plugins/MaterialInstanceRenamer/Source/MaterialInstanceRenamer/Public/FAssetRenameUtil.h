@@ -25,6 +25,15 @@ class FAssetRenameUtil
 {
 public:
 	/**
+	 * Calculates the new name for a material instance asset without renaming it.
+	 *
+	 * @param Asset The asset data of the material instance to check.
+	 * @param OutNewName The calculated new name.
+	 * @return An ERenameResult indicating if the asset would be renamed, skipped, or if the pattern is invalid.
+	 */
+	static ERenameResult CalculateNewName(const FAssetData& Asset, FString& OutNewName);
+
+	/**
 	 * Renames a single material instance asset based on a set of predefined rules.
 	 * This function is now responsible for checking if a rename is needed,
 	 * extracting the base name, and performing the rename.
