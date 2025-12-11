@@ -65,17 +65,19 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 	return false; // No pattern matched
 }
 
-// Main function to orchestrate the renaming process
-ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName)
+// Calculates the new name for a material instance asset without renaming it
+ERenameResult FAssetRenameUtil::CalculateNewName(const FAssetData& Asset, FString& OutNewName)
 {
 	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
 	const FString RecommendedPrefix = Settings->RenamePrefix;
-	FString OldAssetName = SelectedAsset.AssetName.ToString();
+	FString OldAssetName = Asset.AssetName.ToString();
 
 	// 1. Check if the asset should be skipped
 	// The MI_M_ prefix is a special case for cleaning up material-prefixed instances.
 	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(TEXT("MI_M_")))
 	{
+		// Even if skipped, we set OutNewName to the current name
+		OutNewName = OldAssetName;
 		UE_LOG(LogTemp, Log, TEXT("Skipped rename for '%s' as it already has the recommended prefix."), *OldAssetName);
 		return ERenameResult::Skipped;
 	}
@@ -87,14 +89,29 @@ ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& Selecte
 		return ERenameResult::InvalidPattern;
 	}
 
-	// 3. Construct the new name and perform the rename
-	FString NewAssetName = RecommendedPrefix + BaseName;
-	if (RenameAsset(SelectedAsset, NewAssetName, OutNewName))
+	// 3. Construct the new name
+	OutNewName = RecommendedPrefix + BaseName;
+	return ERenameResult::Renamed;
+}
+
+// Main function to orchestrate the renaming process
+ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName)
+{
+	FString NewAssetName;
+	ERenameResult CalculationResult = CalculateNewName(SelectedAsset, NewAssetName);
+
+	if (CalculationResult == ERenameResult::Renamed)
 	{
-		return ERenameResult::Renamed;
+		// 3. Perform the rename
+		if (RenameAsset(SelectedAsset, NewAssetName, OutNewName))
+		{
+			return ERenameResult::Renamed;
+		}
+		return ERenameResult::Failed;
 	}
 
-	return ERenameResult::Failed;
+	OutNewName = NewAssetName;
+	return CalculationResult;
 }
 
 // Performs the actual asset rename using the AssetTools module.
