@@ -35,7 +35,6 @@ public:
 	 */
 	static ERenameResult RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName);
 
-private:
 	/**
 	 * Extracts the base name from a material instance asset's name according to defined patterns.
 	 *
@@ -45,6 +44,7 @@ private:
 	 */
 	static bool ExtractBaseName(const FString& OldAssetName, FString& OutBaseName);
 
+private:
 	/**
 	 * Performs the actual asset rename using the AssetTools module.
 	 *
