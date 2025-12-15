@@ -29,24 +29,34 @@ struct FRenamePattern
 bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& OutBaseName)
 {
 	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
-	const FString CurrentPrefix = Settings->RenamePrefix;
+	const FString& CurrentPrefix = Settings->RenamePrefix;
 
-	TArray<FRenamePattern> Patterns;
-	// Add patterns for the current custom prefix first, as they are most specific.
-	Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT("_Inst"));
-	Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT(""));
+	static TArray<FRenamePattern> Patterns;
+	static FString LastPrefix;
 
-	// Add patterns for the legacy "MI_" prefix to allow cleanup of old assets,
-	// but only if the custom prefix is not the same.
-	if (CurrentPrefix != TEXT("MI_"))
+	// Rebuild patterns only if the prefix settings have changed or this is the first run
+	if (Patterns.IsEmpty() || LastPrefix != CurrentPrefix)
 	{
-		Patterns.Emplace(TEXT("MI_M_"), TEXT("_Inst"));
-		Patterns.Emplace(TEXT("MI_M_"), TEXT(""));
-	}
+		Patterns.Reset();
+		Patterns.Reserve(6);
+		LastPrefix = CurrentPrefix;
 
-	// Add general patterns
-	Patterns.Emplace(TEXT("M_"), TEXT("_Inst"));
-	Patterns.Emplace(TEXT(""), TEXT("_Inst"));
+		// Add patterns for the current custom prefix first, as they are most specific.
+		Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT("_Inst"));
+		Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT(""));
+
+		// Add patterns for the legacy "MI_" prefix to allow cleanup of old assets,
+		// but only if the custom prefix is not the same.
+		if (CurrentPrefix != TEXT("MI_"))
+		{
+			Patterns.Emplace(TEXT("MI_M_"), TEXT("_Inst"));
+			Patterns.Emplace(TEXT("MI_M_"), TEXT(""));
+		}
+
+		// Add general patterns
+		Patterns.Emplace(TEXT("M_"), TEXT("_Inst"));
+		Patterns.Emplace(TEXT(""), TEXT("_Inst"));
+	}
 
 	for (const FRenamePattern& Pattern : Patterns)
 	{
@@ -69,7 +79,7 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName)
 {
 	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
-	const FString RecommendedPrefix = Settings->RenamePrefix;
+	const FString& RecommendedPrefix = Settings->RenamePrefix;
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
 	// 1. Check if the asset should be skipped
