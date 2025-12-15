@@ -66,6 +66,30 @@ You can customize the renaming prefix:
 4.  All Material Instances within the project will be scanned and renamed according to the naming convention.
 5.  A dialog box indicating the results will be displayed upon completion.
 
+### Command Line Interface (Commandlet)
+
+You can run the renaming process from the command line using the `MaterialInstanceRenamer` commandlet. This is useful for automated builds or CI/CD pipelines.
+
+**Command Format:**
+
+```bash
+UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer [Arguments]
+```
+
+**Arguments:**
+
+*   `-run=MaterialInstanceRenamer`: Required. Specifies the commandlet to run.
+*   `-Path=<Path>`: (Optional) The content path to scan for Material Instances. Defaults to `/Game` if not specified.
+*   `-Prefix=<String>`: (Optional) The prefix to use for renaming. If specified, this overrides the project settings.
+*   `-DryRun`: (Optional) Simulation mode. If present, the commandlet will log what changes would be made without actually modifying any assets.
+
+**Example:**
+
+```bash
+# Dry run scan of the /Game/Characters folder with a custom prefix "MI_Char_"
+UnrealEditor-Cmd.exe "C:\Projects\MyGame\MyGame.uproject" -run=MaterialInstanceRenamer -Path=/Game/Characters -Prefix=MI_Char_ -DryRun
+```
+
 ## Compatibility
 
 *   **Engine Versions:** 5.4, 5.5, 5.6
