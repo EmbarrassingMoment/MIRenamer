@@ -60,6 +60,30 @@
 4.  プロジェクト内のすべてのマテリアルインスタンスがスキャンされ、命名規則に従ってリネーム処理が実行されます。
 5.  処理完了後、結果を示すダイアログが表示されます。
 
+### コマンドライン実行 (Commandlet)
+
+`MaterialInstanceRenamer` コマンドレットを使用して、コマンドラインからリネーム処理を実行できます。これは自動ビルドやCI/CDパイプラインでの利用に便利です。
+
+**コマンド形式:**
+
+```bash
+UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer [Arguments]
+```
+
+**引数:**
+
+*   `-run=MaterialInstanceRenamer`: 必須。実行するコマンドレットを指定します。
+*   `-Path=<Path>`: (オプション) スキャンするコンテンツパスを指定します。指定しない場合のデフォルトは `/Game` です。
+*   `-Prefix=<String>`: (オプション) リネームに使用するプレフィックスを指定します。指定した場合、プロジェクト設定よりも優先されます。
+*   `-DryRun`: (オプション) シミュレーションモードです。指定すると、実際には変更を行わず、変更される内容をログに出力します。
+
+**実行例:**
+
+```bash
+# /Game/Characters フォルダを対象に、プレフィックス "MI_Char_" を使用してドライラン（テスト実行）を行う例
+UnrealEditor-Cmd.exe "C:\Projects\MyGame\MyGame.uproject" -run=MaterialInstanceRenamer -Path=/Game/Characters -Prefix=MI_Char_ -DryRun
+```
+
 ## 互換性
 
 *   **エンジンバージョン:** 5.4, 5.5
