@@ -1,3 +1,9 @@
+# Material Instance Renamer
+
+[![Available on Fab](https://img.shields.io/badge/Available%20on-Fab-blue?style=for-the-badge)](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
+
+[English](./README.md) | [日本語 (Japanese)](./Readme.ja.md)
+
 ## 概要
 
 このUnreal Engineプラグインは、コンテンツブラウザ内のマテリアルインスタンス (Material Instance) アセットの名前を、プロジェクトの命名規則に従って簡単に変更するための機能を提供します。個別のリネームと、プロジェクト内の全マテリアルインスタンスの一括リネームに対応しています。
@@ -34,10 +40,23 @@
 
 ### インストール
 
-1.  このプラグインフォルダを、お使いのUnreal Engineプロジェクトの `Plugins` フォルダ内にコピーします。
-    * 例: `[YourProjectDirectory]/Plugins/MaterialInstanceRenamer`
-2.  Unreal Engineエディタを起動（または再起動）します。
-3.  プラグインが自動的に有効化されます。（必要であれば、メニューの「編集」>「プラグイン」から`MaterialInstanceRenamer`を検索し、有効になっているか確認してください。）
+#### Option A: Fabからインストール (推奨)
+最も簡単で確実な方法です。
+
+1. [Fabの商品ページ](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)にアクセスします。
+2. ライブラリに追加します。
+3. Epic Games Launcherを開き、使用するエンジンバージョンにプラグインをインストールします。
+4. プロジェクトを開き、メニューの「編集」>「プラグイン」からプラグインを有効にします。
+
+#### Option B: GitHubから手動インストール
+ソースコードを変更したい場合や、開発者向けのインストール方法です。
+
+1. このリポジトリをクローンまたはダウンロードします。
+2. `MaterialInstanceRenamer` フォルダを、プロジェクトの `Plugins` ディレクトリにコピーします。
+   * 例: `[YourProjectDirectory]/Plugins/MaterialInstanceRenamer`
+3. `.uproject` ファイルを右クリックし、"Generate Visual Studio project files" を選択します。
+4. Visual Studio でプロジェクトをビルドします (Development Editor 構成)。
+5. エディタを起動します。
 
 ### 設定方法
 
@@ -95,9 +114,9 @@ UnrealEditor-Cmd.exe "C:\Projects\MyGame\MyGame.uproject" -run=MaterialInstanceR
 
 ## マーケットプレイス
 
-このプラグインはUnreal Engine マーケットプレイスで公開されています:
+このプラグインはUnreal Engine マーケットプレイス (Fab) で公開されています:
 
-*   [マーケットプレイスで表示](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
+*   [Fabで表示](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
 
 ## 作者
 

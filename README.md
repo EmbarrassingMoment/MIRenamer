@@ -1,8 +1,8 @@
 # Material Instance Renamer
 
-This plugin is available in English and Japanese.
-* [English](./README.md)
-* [日本語 (Japanese)](./Readme.ja.md)
+[![Available on Fab](https://img.shields.io/badge/Available%20on-Fab-blue?style=for-the-badge)](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
+
+[English](./README.md) | [日本語 (Japanese)](./Readme.ja.md)
 
 ## Overview
 
@@ -40,10 +40,23 @@ This Unreal Engine plugin provides functionality to easily rename Material Insta
 
 ### Installation
 
-1.  Copy this plugin folder into your Unreal Engine project's `Plugins` directory.
-    * Example: `[YourProjectDirectory]/Plugins/MaterialInstanceRenamer`
-2.  Launch (or restart) the Unreal Engine editor.
-3.  The plugin should be automatically enabled. (If necessary, verify it's enabled by searching for `MaterialInstanceRenamer` under "Edit" > "Plugins" in the menu.)
+#### Option A: Install via Fab (Recommended)
+This is the easiest and most reliable way to install the plugin.
+
+1.  Visit the [Fab product page](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5).
+2.  Add the plugin to your library.
+3.  Open the Epic Games Launcher and install the plugin to your Engine version.
+4.  Launch your project and enable the plugin via "Edit" > "Plugins" if it is not already enabled.
+
+#### Option B: Manual Installation (GitHub)
+For developers who want to modify the source code or use a specific version.
+
+1.  Clone or download this repository.
+2.  Copy the `MaterialInstanceRenamer` folder into your project's `Plugins` directory (create the directory if it doesn't exist).
+    *   Path: `[YourProjectDirectory]/Plugins/MaterialInstanceRenamer`
+3.  Right-click your `.uproject` file and select "Generate Visual Studio project files".
+4.  Build your project using Visual Studio (Development Editor configuration).
+5.  Launch the editor.
 
 ### Configuration
 
@@ -109,7 +122,7 @@ Please see [CHANGELOG.md](./CHANGELOG.md) for the full history of changes.
 
 You can find this plugin on the Unreal Engine Marketplace:
 
-*   [View on Marketplace](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
+*   [View on Fab](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
 
 ## Author
 
@@ -120,5 +133,3 @@ You can find this plugin on the Unreal Engine Marketplace:
 ## License
 
 This plugin is distributed under the [Unreal Engine EULA](https://www.unrealengine.com/eula).
-
----
