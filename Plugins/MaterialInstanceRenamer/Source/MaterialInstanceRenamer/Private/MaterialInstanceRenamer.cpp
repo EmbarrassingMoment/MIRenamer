@@ -1,4 +1,4 @@
-﻿// Copyright 2025 kurorekish. All Rights Reserved.
+﻿// Copyright 2026 kurorekish. All Rights Reserved.
 
 #include "MaterialInstanceRenamer.h"
 #include "FAssetRenameUtil.h"
