@@ -1,7 +1,6 @@
 # Material Instance Renamer
 
 [![Available on Fab](https://img.shields.io/badge/Available%20on-Fab-blue?style=for-the-badge)](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
-[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](https://opensource.org/licenses/ISC)
 [![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.4_%7C_5.5_%7C_5.6_%7C_5.7-555555?style=for-the-badge&logo=unrealengine&logoColor=white)](https://www.unrealengine.com)
 [![Platform](https://img.shields.io/badge/Platform-Win64-blue?style=for-the-badge&logo=windows)](https://www.microsoft.com/windows)
 [![GitHub release](https://img.shields.io/github/v/release/EmbarrassingMoment/MIRenamer?style=for-the-badge)](https://github.com/EmbarrassingMoment/MIRenamer/releases)
