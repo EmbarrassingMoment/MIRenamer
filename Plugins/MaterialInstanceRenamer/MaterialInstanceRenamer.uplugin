@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
+	"Version": 2,
+	"VersionName": "1.3.0",
 	"FriendlyName": "MaterialInstanceRenamer",
 	"Description": "This plugin provides tools to easily rename material instances in Unreal Engine. It automatically renames selected material instances based on the recommended prefix for Unreal Engine.",
 	"Category": "Editor",
