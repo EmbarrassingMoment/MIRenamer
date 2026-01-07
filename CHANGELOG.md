@@ -1,6 +1,6 @@
 # Changelog
 
-### v1.5.0 (2026-01-07)
+### v1.3.0 (2026-01-07)
 * **New Feature:** Added a Commandlet for batch renaming via command line. Supports `-Path`, `-Prefix`, and `-DryRun` arguments. Usage: `UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer -Path="/Game/TargetFolder" -Prefix="MI_"`.
 
 ### v1.2.0 (2025-10-25)

@@ -1,6 +1,6 @@
 # 変更履歴 (Changelog)
 
-### v1.5.0 (2026-01-07)
+### v1.3.0 (2026-01-07)
 * **新機能:** コマンドライン経由でバッチリネームを実行するためのコマンドレットを追加しました。`-Path`、`-Prefix`、`-DryRun` 引数をサポートしています。使用法: `UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer -Path="/Game/TargetFolder" -Prefix="MI_"`.
 
 ### v1.2.0 (2025-10-25)
