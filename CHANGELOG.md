@@ -1,5 +1,8 @@
 # Changelog
 
+### v1.5.0 (2026-01-07)
+* **New Feature:** Added a Commandlet for batch renaming via command line. Supports `-Path`, `-Prefix`, and `-DryRun` arguments. Usage: `UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer -Path="/Game/TargetFolder" -Prefix="MI_"`.
+
 ### v1.2.0 (2025-10-25)
 * **New Feature:** Added an "Auto Rename on Asset Creation" feature. This allows for automatic renaming of Material Instances as soon as they are created. The feature is disabled by default but can be enabled in Project Settings or toggled via the "Tools" menu.
 * **Bug Fix:** Fixed multiple crashes and compilation errors related to UI registration timing, localization, and deprecated API usage. The plugin is now more stable.
