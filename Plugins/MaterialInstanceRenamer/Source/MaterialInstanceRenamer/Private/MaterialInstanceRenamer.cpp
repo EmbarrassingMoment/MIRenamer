@@ -27,9 +27,19 @@
 // Localization Manager
 //----------------------------------------------------------------------//
 
+/**
+ * Manages localization for the plugin, supporting English and Japanese.
+ * Falls back to English if the current culture is not supported.
+ */
 class FLocalizationManager
 {
 public:
+    /**
+     * Retrieves localized text for a given key based on the current culture.
+     *
+     * @param Key The key for the localized text.
+     * @return The localized FText, or an error message if the key is not found.
+     */
     static FText GetText(const FString& Key)
     {
         const FString CultureName = FInternationalization::Get().GetCurrentCulture()->GetTwoLetterISOLanguageName();
@@ -59,6 +69,11 @@ public:
     }
 
 private:
+    /**
+     * Creates and populates the localization table with supported languages.
+     *
+     * @return A map containing localization data for supported cultures.
+     */
     static TMap<FString, TMap<FString, FText>> CreateLocalizationTable()
     {
         TMap<FString, TMap<FString, FText>> Table;
@@ -117,8 +132,16 @@ const TMap<FString, TMap<FString, FText>> FLocalizationManager::LocalizationTabl
 //----------------------------------------------------------------------//
 // Context Menu Logic
 //----------------------------------------------------------------------//
+/**
+ * Namespace containing logic for Content Browser context menu extensions.
+ */
 namespace MenuExtension_MaterialInstance
 {
+    /**
+     * Executes the rename action for selected Material Instances in the Content Browser.
+     *
+     * @param MenuContext The context passed from the menu system, containing selected assets.
+     */
     static void OnExecuteAction(const FToolMenuContext& MenuContext)
     {
         const UContentBrowserAssetContextMenuContext* Context = UContentBrowserAssetContextMenuContext::FindContextWithAssets(MenuContext);
