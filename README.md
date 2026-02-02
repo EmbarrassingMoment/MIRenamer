@@ -4,9 +4,10 @@
 [![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.4_%7C_5.5_%7C_5.6_%7C_5.7-555555?style=for-the-badge&logo=unrealengine&logoColor=white)](https://www.unrealengine.com)
 [![Platform](https://img.shields.io/badge/Platform-Win64-blue?style=for-the-badge&logo=windows)](https://www.microsoft.com/windows)
 [![GitHub release](https://img.shields.io/github/v/release/EmbarrassingMoment/MIRenamer?style=for-the-badge)](https://github.com/EmbarrassingMoment/MIRenamer/releases)
+
 [![Sponsor](https://img.shields.io/badge/Sponsor-EmbarrassingMoment-ff69b4?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/EmbarrassingMoment)
 
-[English](./README.md) | [日本語 (Japanese)](./Readme.ja.md)
+[日本語 (Japanese)](./Readme.ja.md)
 
 ## Overview
 
