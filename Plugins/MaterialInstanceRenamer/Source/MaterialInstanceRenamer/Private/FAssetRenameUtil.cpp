@@ -58,6 +58,7 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 
 		// Add general patterns
 		Patterns.Emplace(TargetSourcePrefix, TEXT("_Inst"));
+		Patterns.Emplace(TargetSourcePrefix, TEXT(""));
 		Patterns.Emplace(TEXT(""), TEXT("_Inst"));
 	}
 
