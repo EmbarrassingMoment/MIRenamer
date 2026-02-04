@@ -30,31 +30,34 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 {
 	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
 	const FString& CurrentPrefix = Settings->RenamePrefix;
+	const FString& TargetSourcePrefix = Settings->SourcePrefix;
 
 	static TArray<FRenamePattern> Patterns;
 	static FString LastPrefix;
+	static FString LastSourcePrefix;
 
 	// Rebuild patterns only if the prefix settings have changed or this is the first run
-	if (Patterns.IsEmpty() || LastPrefix != CurrentPrefix)
+	if (Patterns.IsEmpty() || LastPrefix != CurrentPrefix || LastSourcePrefix != TargetSourcePrefix)
 	{
 		Patterns.Reset();
 		Patterns.Reserve(6);
 		LastPrefix = CurrentPrefix;
+		LastSourcePrefix = TargetSourcePrefix;
 
 		// Add patterns for the current custom prefix first, as they are most specific.
-		Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT("_Inst"));
-		Patterns.Emplace(CurrentPrefix + TEXT("M_"), TEXT(""));
+		Patterns.Emplace(CurrentPrefix + TargetSourcePrefix, TEXT("_Inst"));
+		Patterns.Emplace(CurrentPrefix + TargetSourcePrefix, TEXT(""));
 
 		// Add patterns for the legacy "MI_" prefix to allow cleanup of old assets,
 		// but only if the custom prefix is not the same.
 		if (CurrentPrefix != TEXT("MI_"))
 		{
-			Patterns.Emplace(TEXT("MI_M_"), TEXT("_Inst"));
-			Patterns.Emplace(TEXT("MI_M_"), TEXT(""));
+			Patterns.Emplace(TEXT("MI_") + TargetSourcePrefix, TEXT("_Inst"));
+			Patterns.Emplace(TEXT("MI_") + TargetSourcePrefix, TEXT(""));
 		}
 
 		// Add general patterns
-		Patterns.Emplace(TEXT("M_"), TEXT("_Inst"));
+		Patterns.Emplace(TargetSourcePrefix, TEXT("_Inst"));
 		Patterns.Emplace(TEXT(""), TEXT("_Inst"));
 	}
 
