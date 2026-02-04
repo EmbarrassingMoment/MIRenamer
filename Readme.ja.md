@@ -106,6 +106,16 @@ UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer [Arguments]
 UnrealEditor-Cmd.exe "C:\Projects\MyGame\MyGame.uproject" -run=MaterialInstanceRenamer -Path=/Game/Characters -Prefix=MI_Char_ -DryRun
 ```
 
+## 設定
+
+プロジェクト設定から、リネーム時の挙動をカスタマイズできます。
+**Project Settings > Plugins > Material Instance Renamer** を開いてください。
+
+* **Rename Prefix**: リネーム後に付与するプレフィックス（デフォルト: `MI_`）。
+* **Source Prefix (Target to Replace)**: リネーム時に削除・置換対象とするプレフィックス（デフォルト: `M_`）。
+    * 例: ここを `MM_` に設定すると、`MM_Name` というアセットが正しく `MI_Name` にリネームされるようになります。
+* **Auto-Rename on Create**: マテリアルインスタンス作成時の自動リネーム機能を有効にします。
+
 ## 互換性
 
 *   **エンジンバージョン:** 5.4, 5.5
