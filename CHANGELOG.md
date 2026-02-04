@@ -1,5 +1,9 @@
 # Changelog
 
+### v1.4.0 (2026-02-04)
+* **New Feature:** Added a "Source Prefix" setting in Project Settings. Users can now customize the target prefix to be replaced (e.g., changing the default "M_" to "MM_").
+* **Improvement:** Enhanced the renaming logic to correctly handle assets that match the source prefix but do not have a specific suffix (e.g., `MM_Floor` is now correctly renamed to `MI_Floor` when the source prefix is `MM_`).
+
 ### v1.3.0 (2026-01-07)
 * **New Feature:** Added a Commandlet for batch renaming via command line. Supports `-Path`, `-Prefix`, and `-DryRun` arguments. Usage: `UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer -Path="/Game/TargetFolder" -Prefix="MI_"`.
 
