@@ -21,6 +21,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Renaming", meta = (DisplayName = "Rename Prefix"))
 	FString RenamePrefix;
 
+	/** The prefix to search for and remove (e.g. "M_", "MM_"). */
+	UPROPERTY(Config, EditAnywhere, Category = "Renaming", meta = (DisplayName = "Source Prefix (Target to Replace)"))
+	FString SourcePrefix;
+
 	/** Enables/disables automatic renaming of Material Instance assets when they are created. */
 	UPROPERTY(Config, EditAnywhere, Category = "Renaming", meta = (DisplayName = "Auto-Rename on Create"))
 	bool bAutoRenameOnCreate;
