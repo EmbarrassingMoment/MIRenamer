@@ -108,6 +108,16 @@ UnrealEditor-Cmd.exe <ProjectFile> -run=MaterialInstanceRenamer [Arguments]
 UnrealEditor-Cmd.exe "C:\Projects\MyGame\MyGame.uproject" -run=MaterialInstanceRenamer -Path=/Game/Characters -Prefix=MI_Char_ -DryRun
 ```
 
+## Configuration
+
+You can customize the renaming behavior from the project settings.
+Open **Project Settings > Plugins > Material Instance Renamer**.
+
+* **Rename Prefix**: The prefix to append after renaming (Default: `MI_`).
+* **Source Prefix (Target to Replace)**: The prefix to remove/replace during renaming (Default: `M_`).
+    * Example: If you set this to `MM_`, an asset named `MM_Name` will be correctly renamed to `MI_Name`.
+* **Auto-Rename on Create**: Enables the auto-rename feature upon Material Instance creation.
+
 ## Compatibility
 
 *   **Engine Versions:** 5.4, 5.5, 5.6
