@@ -8,7 +8,7 @@ public class MIRenamerTarget : TargetRules
 	public MIRenamerTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 
 		ExtraModuleNames.AddRange( new string[] { "MIRenamer" } );
 	}
