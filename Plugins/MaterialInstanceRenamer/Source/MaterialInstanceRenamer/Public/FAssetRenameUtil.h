@@ -36,6 +36,17 @@ public:
 	static ERenameResult RenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName);
 
 	/**
+	 * Simulates a rename operation without actually renaming the asset.
+	 * Uses the same logic as RenameMaterialInstance for skip/pattern checks,
+	 * but does not perform the actual file system rename.
+	 *
+	 * @param SelectedAsset The asset data of the material instance to simulate renaming.
+	 * @param OutNewName The name that would be assigned if the rename were performed.
+	 * @return An ERenameResult indicating what would happen (Renamed, Skipped, or InvalidPattern).
+	 */
+	static ERenameResult SimulateRenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName);
+
+	/**
 	 * Extracts the base name from a material instance asset's name according to defined patterns.
 	 *
 	 * @param OldAssetName The current name of the asset.

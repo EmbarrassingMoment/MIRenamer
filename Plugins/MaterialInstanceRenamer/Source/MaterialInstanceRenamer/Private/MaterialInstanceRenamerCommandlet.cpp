@@ -90,32 +90,27 @@ int32 UMaterialInstanceRenamerCommandlet::Main(const FString& Params)
 	{
 		FString AssetName = AssetData.AssetName.ToString();
 
-		// Logic for Dry Run to simulate what RenameMaterialInstance does
 		if (bDryRun)
 		{
-			// Replicate checks from FAssetRenameUtil::RenameMaterialInstance
-			// 1. Check if skipped
-			if (AssetName.StartsWith(RecommendedPrefix) && !AssetName.StartsWith(TEXT("MI_M_")))
-			{
-				UE_LOG(LogTemp, Display, TEXT("[DryRun] Skipped: %s (Already valid)"), *AssetName);
-				SkippedCount++;
-				continue;
-			}
+			FString NewName;
+			ERenameResult Result = FAssetRenameUtil::SimulateRenameMaterialInstance(AssetData, NewName);
 
-			// 2. Extract base name
-			FString BaseName;
-			// ExtractBaseName is now public so we can use it
-			// Note: ExtractBaseName reads from GetDefault<UMaterialInstanceRenamerSettings>(), so modifying the CDO earlier works.
-			if (FAssetRenameUtil::ExtractBaseName(AssetName, BaseName))
+			switch (Result)
 			{
-				FString NewName = RecommendedPrefix + BaseName;
+			case ERenameResult::Renamed:
 				UE_LOG(LogTemp, Display, TEXT("[DryRun] Would Rename: %s -> %s"), *AssetName, *NewName);
 				RenamedCount++;
-			}
-			else
-			{
+				break;
+			case ERenameResult::Skipped:
+				UE_LOG(LogTemp, Display, TEXT("[DryRun] Skipped: %s (Already valid)"), *AssetName);
+				SkippedCount++;
+				break;
+			case ERenameResult::InvalidPattern:
 				UE_LOG(LogTemp, Warning, TEXT("[DryRun] Invalid Pattern: %s"), *AssetName);
 				InvalidPatternCount++;
+				break;
+			default:
+				break;
 			}
 		}
 		else

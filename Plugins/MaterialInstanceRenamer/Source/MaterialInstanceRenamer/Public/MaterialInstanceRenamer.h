@@ -30,12 +30,12 @@ private:
 	/**
 	 * Registers the plugin settings in the Project Settings window.
 	 */
-    void RegisterSettings();
+	void RegisterSettings();
 
 	/**
 	 * Unregisters the plugin settings.
 	 */
-    void UnregisterSettings();
+	void UnregisterSettings();
 
 	/**
 	 * Callback function for the "Rename All Material Instances" menu action.
