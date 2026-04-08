@@ -1,5 +1,11 @@
 # Changelog
 
+### v1.4.1 (2026-04-07)
+* **Bug Fix:** Replaced hardcoded `MI_M_` special-case check with a dynamic `CleanupPrefix` (`RenamePrefix + SourcePrefix`). Custom prefix configurations now correctly detect assets that need source-prefix cleanup.
+* **Bug Fix:** Added bounds checking in `ExtractBaseName` to skip patterns that would produce an empty base name (e.g., an asset named just `M_`).
+* **Improvement:** Added `SimulateRenameMaterialInstance` to `FAssetRenameUtil`, eliminating duplicated skip/pattern logic in the Commandlet's DryRun mode and preventing future drift between simulation and actual rename behavior.
+* **Code Quality:** Normalized indentation to tabs across all source files per UE5 coding standards.
+
 ### v1.4.0 (2026-02-04)
 * **New Feature:** Added a "Source Prefix" setting in Project Settings. Users can now customize the target prefix to be replaced (e.g., changing the default "M_" to "MM_").
 * **Improvement:** Enhanced the renaming logic to correctly handle assets that match the source prefix but do not have a specific suffix (e.g., `MM_Floor` is now correctly renamed to `MI_Floor` when the source prefix is `MM_`).

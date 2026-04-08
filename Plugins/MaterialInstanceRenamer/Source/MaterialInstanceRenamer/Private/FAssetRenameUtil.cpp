@@ -70,6 +70,7 @@ bool FAssetRenameUtil::ExtractBaseName(const FString& OldAssetName, FString& Out
 		if (bPrefixMatches && bSuffixMatches)
 		{
 			int32 End = OldAssetName.Len() - Pattern.SuffixLen;
+			if (End <= Pattern.PrefixLen) continue; // Skip if base name would be empty
 			OutBaseName = OldAssetName.Mid(Pattern.PrefixLen, End - Pattern.PrefixLen);
 			return true;
 		}
@@ -87,8 +88,10 @@ ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& Selecte
 	FString OldAssetName = SelectedAsset.AssetName.ToString();
 
 	// 1. Check if the asset should be skipped
-	// The MI_M_ prefix is a special case for cleaning up material-prefixed instances.
-	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(TEXT("MI_M_")))
+	// Allow renaming if the name starts with RecommendedPrefix + SourcePrefix (e.g. "MI_M_"),
+	// as these need cleanup to remove the embedded source prefix.
+	const FString CleanupPrefix = RecommendedPrefix + Settings->SourcePrefix;
+	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(CleanupPrefix))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Skipped rename for '%s' as it already has the recommended prefix."), *OldAssetName);
 		return ERenameResult::Skipped;
@@ -109,6 +112,29 @@ ERenameResult FAssetRenameUtil::RenameMaterialInstance(const FAssetData& Selecte
 	}
 
 	return ERenameResult::Failed;
+}
+
+// Simulates a rename without performing the actual file system operation.
+ERenameResult FAssetRenameUtil::SimulateRenameMaterialInstance(const FAssetData& SelectedAsset, FString& OutNewName)
+{
+	const UMaterialInstanceRenamerSettings* Settings = GetDefault<UMaterialInstanceRenamerSettings>();
+	const FString& RecommendedPrefix = Settings->RenamePrefix;
+	FString OldAssetName = SelectedAsset.AssetName.ToString();
+
+	const FString CleanupPrefix = RecommendedPrefix + Settings->SourcePrefix;
+	if (OldAssetName.StartsWith(RecommendedPrefix) && !OldAssetName.StartsWith(CleanupPrefix))
+	{
+		return ERenameResult::Skipped;
+	}
+
+	FString BaseName;
+	if (!ExtractBaseName(OldAssetName, BaseName))
+	{
+		return ERenameResult::InvalidPattern;
+	}
+
+	OutNewName = RecommendedPrefix + BaseName;
+	return ERenameResult::Renamed;
 }
 
 // Performs the actual asset rename using the AssetTools module.
