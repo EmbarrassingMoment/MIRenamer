@@ -1,9 +1,10 @@
 # Material Instance Renamer
 
-[![Available on Fab](https://img.shields.io/badge/Available%20on-Fab-blue?style=for-the-badge)](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
-[![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.4_%7C_5.5_%7C_5.6_%7C_5.7-555555?style=for-the-badge&logo=unrealengine&logoColor=white)](https://www.unrealengine.com)
-[![Platform](https://img.shields.io/badge/Platform-Win64-blue?style=for-the-badge&logo=windows)](https://www.microsoft.com/windows)
-[![GitHub release](https://img.shields.io/github/v/release/EmbarrassingMoment/MIRenamer?style=for-the-badge)](https://github.com/EmbarrassingMoment/MIRenamer/releases)
+[![Available on Fab](https://img.shields.io/badge/Fab-Available-0096FF?style=flat&logo=epicgames&logoColor=white)](https://www.fab.com/listings/0523dde6-2cc5-4129-9d83-78584910d5a5)
+[![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.4%20--%205.7-black?style=flat&logo=unrealengine&logoColor=white)](https://www.unrealengine.com/)
+[![Version](https://img.shields.io/badge/Version-1.4.1-brightgreen?style=flat)](CHANGELOG.ja.md)
+[![Platform](https://img.shields.io/badge/Platform-Win64-blue?style=flat)](Plugins/MaterialInstanceRenamer/MaterialInstanceRenamer.uplugin)
+[![Sponsor](https://img.shields.io/badge/Sponsor-EmbarrassingMoment-ff69b4?style=flat&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/EmbarrassingMoment)
 
 [English](./README.md) | [日本語 (Japanese)](./Readme.ja.md)
 
