@@ -10,12 +10,12 @@
 
 ## Maintenance Status
 
-**This plugin is no longer updated. There will be no version for UE 5.8 or later.**
+**This plugin now gets bug fixes only. No new features are planned.**
 
-UE 5.8 added an engine setting that names new assets by asset type: **Editor Preferences > General > Asset Tools > Asset Naming Convention Overrides**. Giving new Material Instances a prefix such as `MI_` was the main job of this plugin, and the engine can now do that on its own, so development has stopped.
+UE 5.8 added an engine setting that names new assets by asset type: **Editor Preferences > General > Asset Tools > Asset Naming Convention Overrides**. Giving new Material Instances a prefix such as `MI_` was the main job of this plugin, and the engine can now do that on its own.
 
-* The last version, 1.4.1, supports UE 5.4 – 5.7 and is still available on Fab.
-* The engine setting only applies when an asset is created. It does not rename existing Material Instances. To rename them in bulk, use this plugin on UE 5.4 – 5.7.
+* The engine setting only applies when an asset is created. It does not rename existing Material Instances. This plugin still does that, for selected assets or for the whole project.
+* Please report bugs on [Issues](https://github.com/EmbarrassingMoment/MIRenamer/issues).
 
 ## Overview
 
@@ -128,7 +128,7 @@ Open **Project Settings > Plugins > Material Instance Renamer**.
 
 ## Compatibility
 
-*   **Engine Versions:** 5.4 – 5.7 (no updates for 5.8 or later, see [Maintenance Status](#maintenance-status))
+*   **Engine Versions:** 5.4 – 5.7
 *   **Platforms:** Windows (Win64)
 
 ## Known Issues
